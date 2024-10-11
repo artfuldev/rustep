@@ -11,7 +11,6 @@ use command::Command;
 const URL: &str = "https://github.com/artfuldev/rustep";
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // Get values from Cargo.toml using environment variables set by Cargo
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
@@ -39,7 +38,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                     exit(0);
                 }
             },
-            _ => {}
+            _ => {
+                let mut stderr = io::stderr().lock();
+                writeln!(stderr, "ignoring unknown input: {}", input)?;
+                stderr.flush()?;
+            }
         }
     }
 }
