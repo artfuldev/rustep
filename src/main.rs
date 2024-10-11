@@ -1,4 +1,7 @@
 pub mod command;
+pub mod duration;
+pub mod game;
+pub mod time;
 
 use std::{
     error::Error,
@@ -34,6 +37,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                     writeln!(stdout, "identify url {}", URL)?;
                     writeln!(stdout, "identify ok")?;
                     stdout.flush()?;
+                }
+                Command::Move(game, time) => {
                 }
                 Command::Quit => {
                     exit(0);
