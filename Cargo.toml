@@ -1,6 +1,7 @@
 [package]
 name = "rustep"
 version = "0.1.0"
+authors = ["artfuldev<hello@artful.dev>"]
 edition = "2021"
 
 [dependencies]
