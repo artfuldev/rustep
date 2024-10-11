@@ -2,7 +2,7 @@ pub mod command;
 
 use std::{
     error::Error,
-    io::{self, Write},
+    io::{self, BufRead, Write},
     process::exit,
 };
 
@@ -16,7 +16,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let author = env!("CARGO_PKG_AUTHORS");
     loop {
         let mut buffer = String::new();
-        io::stdin().read_line(&mut buffer)?;
+        let mut stdin = io::stdin().lock();
+        stdin.read_line(&mut buffer)?;
         let input = buffer.trim();
         match Command::parse(input) {
             Ok((_, command)) => match command {
