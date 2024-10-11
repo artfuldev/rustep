@@ -1,6 +1,8 @@
 pub mod command;
 pub mod duration;
 pub mod game;
+pub mod position;
+pub mod solve;
 pub mod time;
 
 use std::{
@@ -38,7 +40,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                     writeln!(stdout, "identify ok")?;
                     stdout.flush()?;
                 }
-                Command::Move(game, time) => {
+                Command::Move(game, _) => {
+                    let position = solve::best(game);
+                    match position {
+                        Ok(position) => {
+                            let mut stdout = io::stdout().lock();
+                            writeln!(stdout, "best {}", position)?;
+                        }
+                        Err(error) => {
+                            let mut stderr = io::stderr().lock();
+                            writeln!(stderr, "{}", error)?;
+                            stderr.flush()?;
+                        }
+                    }
                 }
                 Command::Quit => {
                     exit(0);
