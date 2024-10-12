@@ -8,7 +8,7 @@ pub mod time;
 use std::{
     error::Error,
     io::{self, BufRead, Write},
-    process::exit,
+    process,
 };
 
 use command::Command;
@@ -55,7 +55,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     }
                 }
                 Command::Quit => {
-                    exit(0);
+                    process::exit(0);
                 }
             },
             _ => {
