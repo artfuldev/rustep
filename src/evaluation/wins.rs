@@ -1,7 +1,9 @@
+use memoize::memoize;
 use num::BigUint;
 
 type Win = BigUint;
 
+#[memoize]
 pub fn wins(size: usize, win_length: usize) -> Vec<Win> {
     let one: BigUint = BigUint::from(1u8);
     if win_length < 1 || win_length > size {

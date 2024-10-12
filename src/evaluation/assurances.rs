@@ -1,9 +1,11 @@
+use memoize::memoize;
 use num::BigUint;
 
 type Playable = BigUint;
 type Played = BigUint;
 type Assurance = (Playable, Played);
 
+#[memoize]
 pub fn assurances(size: usize, assurance: usize) -> Vec<Assurance> {
     let one: BigUint = BigUint::from(1u8);
     if assurance < 1 || assurance >= size {
