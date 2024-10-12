@@ -14,7 +14,13 @@ fn column(mut index: u16) -> String {
     result
 }
 
-pub struct Position(pub u16, pub u16);
+pub struct Position(u16, u16);
+
+impl Position {
+    pub fn new(index: u16, size: u16) -> Position {
+        Position(index / size, index % size)
+    }
+}
 
 impl Display for Position {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
