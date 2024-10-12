@@ -29,6 +29,6 @@ impl Player for Random {
             sample = rng.sample(distribution);
             position = BigUint::from(1u8) << sample;
         }
-        Ok(Position::new(square - sample - 1, game.board.size.into()))
+        Ok(Position::new(position, game.board.size.into()))
     }
 }

@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use num_bigint::BigUint;
+
 fn column(mut index: u16) -> String {
     let mut result = String::new();
     loop {
@@ -17,7 +19,8 @@ fn column(mut index: u16) -> String {
 pub struct Position(u16, u16);
 
 impl Position {
-    pub fn new(index: u16, size: u16) -> Position {
+    pub fn new(mov: BigUint, size: u16) -> Position {
+        let index = mov.trailing_zeros().unwrap_or(0) as u16;
         Position(index / size, index % size)
     }
 }
