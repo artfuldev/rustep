@@ -1,4 +1,5 @@
 pub mod core;
+pub mod evaluation;
 pub mod players;
 
 use std::{
