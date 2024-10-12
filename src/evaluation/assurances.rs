@@ -1,4 +1,4 @@
-use num_bigint::BigUint;
+use num::BigUint;
 
 type Playable = BigUint;
 type Played = BigUint;

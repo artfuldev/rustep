@@ -1,4 +1,4 @@
-use num_bigint::BigUint;
+use num::BigUint;
 
 type Win = BigUint;
 
@@ -68,7 +68,7 @@ pub fn wins(size: usize, win_length: usize) -> Vec<Win> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use num_bigint::BigUint;
+    use num::BigUint;
     use pretty_assertions::assert_eq;
 
     fn from_binary_string(s: &str) -> BigUint {

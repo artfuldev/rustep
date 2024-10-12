@@ -6,7 +6,7 @@ use nom::{
     sequence::tuple,
     IResult,
 };
-use num_bigint::BigUint;
+use num::{bigint::Sign, BigInt, BigUint};
 
 use super::Cell;
 

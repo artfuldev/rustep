@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use num_bigint::BigUint;
+use num::BigUint;
 
 fn column(mut index: u16) -> String {
     let mut result = String::new();

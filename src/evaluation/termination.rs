@@ -1,4 +1,4 @@
-use num_bigint::BigUint;
+use num::BigUint;
 
 use crate::core::Game;
 

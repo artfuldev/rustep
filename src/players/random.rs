@@ -1,5 +1,5 @@
 use anyhow::{bail, Result};
-use num_bigint::BigUint;
+use num::BigUint;
 use rand::{distributions::Uniform, rngs::ThreadRng, Rng};
 
 use crate::core::{Game, Position, Time};
