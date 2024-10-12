@@ -8,7 +8,7 @@ use std::{
     process,
 };
 
-use core::Command;
+use crate::core::Command;
 use evaluation::heuristic;
 use players::{Evaluator, Player};
 
