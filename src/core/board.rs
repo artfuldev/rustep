@@ -10,7 +10,7 @@ use num::{bigint::Sign, BigInt, BigUint};
 
 use super::{Cell, Move};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Board {
     pub size: u8,
     pub playable: BigUint,

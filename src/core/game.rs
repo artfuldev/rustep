@@ -5,7 +5,7 @@ use nom::{
 
 use super::{Board, Move};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Game {
     pub board: Board,
     pub win_length: u8,

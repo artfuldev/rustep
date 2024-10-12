@@ -4,7 +4,7 @@ use crate::core::Game;
 
 use super::wins;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum Termination {
     Won(bool),
     Drawn,
