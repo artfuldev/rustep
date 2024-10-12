@@ -11,15 +11,15 @@ pub enum Termination {
 }
 
 pub fn terminated(game: Game) -> Option<Termination> {
-    for win in wins(game.size.into(), game.win_length.into()) {
-        if (game.played_x.clone() & win.clone()) == win {
+    for win in wins(game.board.size.into(), game.win_length.into()) {
+        if (game.board.played_x.clone() & win.clone()) == win {
             return Some(Termination::Won(true));
         }
-        if (game.played_o.clone() & win.clone()) == win {
+        if (game.board.played_o.clone() & win.clone()) == win {
             return Some(Termination::Won(false));
         }
     }
-    if game.playable == BigUint::ZERO {
+    if game.board.playable == BigUint::ZERO {
         return Some(Termination::Drawn);
     }
     return None;
