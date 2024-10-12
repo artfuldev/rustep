@@ -1,3 +1,0 @@
-st3p version 2
-identify
-quit
