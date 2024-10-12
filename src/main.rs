@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         }
                         Err(error) => {
                             let mut stderr = io::stderr().lock();
-                            writeln!(stderr, "{}", error)?;
+                            writeln!(stderr, "move error: {}", error)?;
                             stderr.flush()?;
                         }
                     }
