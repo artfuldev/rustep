@@ -1,7 +1,5 @@
 use std::fmt::Display;
 
-use num::BigUint;
-
 use super::Move;
 
 fn column(mut index: u16) -> String {
