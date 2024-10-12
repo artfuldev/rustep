@@ -2,7 +2,7 @@ use anyhow::{bail, Result};
 use num_bigint::BigUint;
 use rand::{distributions::Uniform, rngs::ThreadRng, Rng};
 
-use crate::{game::Game, player::Player, position::Position};
+use crate::{game::Game, player::Player, position::Position, time::Time};
 
 #[derive(Clone)]
 pub struct Random(ThreadRng);
@@ -14,7 +14,7 @@ impl Random {
 }
 
 impl Player for Random {
-    fn best(self, game: Game) -> Result<Position> {
+    fn best(self, game: Game, _: Option<Time>) -> Result<Position> {
         if game.playable == BigUint::ZERO {
             bail!("No moves left!");
         }

@@ -45,8 +45,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                     writeln!(stdout, "identify ok")?;
                     stdout.flush()?;
                 }
-                Command::Move(game, _) => {
-                    let position = player.clone().best(game);
+                Command::Move(game, time) => {
+                    let position = player.clone().best(game, time);
                     match position {
                         Ok(position) => {
                             let mut stdout = io::stdout().lock();
