@@ -9,8 +9,8 @@ use std::{
 };
 
 use core::Command;
-use players::{Player, Random};
-use rand::thread_rng;
+use evaluation::heuristic;
+use players::{Evaluator, Player};
 
 const URL: &str = "https://github.com/artfuldev/rustep";
 
@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let player = &Random::new(thread_rng());
+    let player = &Evaluator::new(heuristic);
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
