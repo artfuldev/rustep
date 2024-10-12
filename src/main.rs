@@ -1,10 +1,5 @@
-pub mod command;
-pub mod duration;
-pub mod game;
-pub mod player;
-pub mod position;
-pub mod random;
-pub mod time;
+pub mod core;
+pub mod players;
 
 use std::{
     error::Error,
@@ -12,10 +7,9 @@ use std::{
     process,
 };
 
-use command::Command;
-use player::Player;
+use core::Command;
+use players::{Player, Random};
 use rand::thread_rng;
-use random::Random;
 
 const URL: &str = "https://github.com/artfuldev/rustep";
 

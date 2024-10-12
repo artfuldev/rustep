@@ -5,11 +5,11 @@ use nom::combinator::{opt, value, verify};
 use nom::sequence::{preceded, tuple};
 use nom::IResult;
 
-use crate::game::Game;
-use crate::time::Time;
+use super::Game;
+use super::Time;
 
 #[derive(Clone)]
-pub(crate) enum Command {
+pub enum Command {
     Handshake(u8),
     Move(Game, Option<Time>),
     Identify,

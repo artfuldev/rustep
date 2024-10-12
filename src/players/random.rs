@@ -2,7 +2,9 @@ use anyhow::{bail, Result};
 use num_bigint::BigUint;
 use rand::{distributions::Uniform, rngs::ThreadRng, Rng};
 
-use crate::{game::Game, player::Player, position::Position, time::Time};
+use crate::core::{Game, Position, Time};
+
+use super::Player;
 
 #[derive(Clone)]
 pub struct Random(ThreadRng);

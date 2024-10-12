@@ -6,7 +6,7 @@ use nom::{
     IResult,
 };
 
-use crate::duration::Duration;
+use super::Duration;
 
 #[derive(Clone, Debug)]
 pub enum Time {
