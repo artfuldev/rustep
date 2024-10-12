@@ -8,7 +8,7 @@ use nom::{
 };
 use num::{bigint::Sign, BigInt, BigUint};
 
-use super::Cell;
+use super::{Cell, Move};
 
 #[derive(Clone, Debug)]
 pub struct Board {
@@ -77,5 +77,27 @@ impl Board {
                 played_o,
             },
         ));
+    }
+
+    pub fn make(self, mov: Move, x_to_play: bool) -> Self {
+        let one = BigUint::from(1u8);
+        let mask = (one.clone() << (self.size * self.size)) - one.clone();
+        let playable = (self.playable.clone() & mask.clone())
+            & ((!(BigInt::from_biguint(Sign::NoSign, mov.clone() & mask.clone())))
+                .to_biguint()
+                .unwrap_or(BigUint::ZERO)
+                & mask);
+        match x_to_play {
+            true => Self {
+                playable,
+                played_x: &self.played_x | mov,
+                ..self.clone()
+            },
+            false => Self {
+                playable,
+                played_o: &self.played_o | mov,
+                ..self.clone()
+            },
+        }
     }
 }

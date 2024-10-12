@@ -3,7 +3,7 @@ use nom::{
     sequence::separated_pair, IResult,
 };
 
-use super::Board;
+use super::{Board, Move};
 
 #[derive(Clone, Debug)]
 pub struct Game {
@@ -32,5 +32,13 @@ impl Game {
 
     pub(crate) fn set_win_length(&mut self, win_length: u8) -> () {
         self.win_length = win_length;
+    }
+
+    pub fn make(self, mov: Move) -> Self {
+        Self {
+            board: self.board.clone().make(mov, self.x_to_play),
+            x_to_play: !self.x_to_play,
+            ..self.clone()
+        }
     }
 }
