@@ -1,8 +1,9 @@
 pub mod command;
 pub mod duration;
 pub mod game;
+pub mod player;
 pub mod position;
-pub mod solve;
+pub mod random;
 pub mod time;
 
 use std::{
@@ -12,6 +13,9 @@ use std::{
 };
 
 use command::Command;
+use player::Player;
+use rand::thread_rng;
+use random::Random;
 
 const URL: &str = "https://github.com/artfuldev/rustep";
 
@@ -19,6 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
+    let player = &Random::new(thread_rng());
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
@@ -41,7 +46,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     stdout.flush()?;
                 }
                 Command::Move(game, _) => {
-                    let position = solve::best(game);
+                    let position = player.clone().best(game);
                     match position {
                         Ok(position) => {
                             let mut stdout = io::stdout().lock();
