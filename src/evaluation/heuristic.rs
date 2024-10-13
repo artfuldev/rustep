@@ -24,11 +24,11 @@ pub fn heuristic(game: Game) -> i64 {
                 continue;
             }
             let x = played.clone() & game.board.played_x.clone();
-            if x == played {
+            if x == played && game.x_to_play {
                 return i64::MAX - square + moves_left - 1;
             }
             let o = played.clone() & game.board.played_o.clone();
-            if o == played {
+            if o == played && !game.x_to_play {
                 return i64::MIN + square - moves_left + 1;
             }
         }
