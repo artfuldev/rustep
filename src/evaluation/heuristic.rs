@@ -20,25 +20,32 @@ pub fn heuristic(game: Game) -> i64 {
             }
         }
 
+        let x_assured_win_score = i64::MAX - square + moves_left - 1;
+        let o_assured_win_score = i64::MIN + square - moves_left + 1;
         for (playable, played) in assurances(game.board.size.into(), game.win_length.into()) {
             if (game.board.playable.clone() & playable.clone()) != playable {
                 continue;
             }
-            if game.x_to_play {
-                let x = played.clone() & game.board.played_x.clone();
-                if x == played {
-                    return i64::MAX - square + moves_left - 1;
+
+            let x = played.clone() & game.board.played_x.clone();
+            if x == played {
+                if game.x_to_play {
+                    return x_assured_win_score;
+                } else {
+                    score = score.max(score + x_assured_win_score);
                 }
-            }
-            else {
+            } else {
                 let o = played.clone() & game.board.played_o.clone();
                 if o == played {
-                    return i64::MIN + square - moves_left + 1;
+                    if !game.x_to_play {
+                        return o_assured_win_score;
+                    } else {
+                        score = score.min(score - o_assured_win_score);
+                    }
                 }
             }
         }
     }
-    let mut score: i64 = 0;
     let square: i64 = i64::from(game.board.size).pow(2);
     for win in wins(game.board.size.into(), game.win_length.into()) {
         let x_winnable = win.clone() & (game.board.played_x.clone() | game.board.playable.clone());
