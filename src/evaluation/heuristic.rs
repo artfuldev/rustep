@@ -80,4 +80,25 @@ mod tests {
         assert!(heuristic(earlier) > heuristic(later));
         Ok(())
     }
+
+    #[test]
+    fn test_game_won_is_better_than_assured_win() -> Result<()> {
+        let (_, mut assured) = Game::parse("_x_/o2_/3_ x")?;
+        assured.set_win_length(2);
+        let (_, mut won) = Game::parse("_2x/o2_/3_ o")?;
+        won.set_win_length(2);
+        assert!(heuristic(won) > heuristic(assured));
+        Ok(())
+    }
+
+    #[test]
+    fn test_assured_win_only_for_played_side() -> Result<()> {
+        let (_, mut assured) = Game::parse("_x_/3_/3_ o")?;
+        assured.set_win_length(2);
+        let (_, mut un_assured) = Game::parse("_x_/_o_/3_ x")?;
+        un_assured.set_win_length(2);
+        println!("{} {}", -heuristic(un_assured.clone()), heuristic(assured.clone()));
+        assert_ne!(heuristic(un_assured), heuristic(assured));
+        Ok(())
+    }
 }
