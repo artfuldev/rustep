@@ -29,7 +29,7 @@ pub fn heuristic(game: Game) -> i64 {
 
             let x = played.clone() & game.board.played_x.clone();
             if x == played {
-                if game.x_to_play {
+                if !game.x_to_play {
                     return x_assured_win_score;
                 } else {
                     score = score.max(score + x_assured_win_score);
@@ -37,7 +37,7 @@ pub fn heuristic(game: Game) -> i64 {
             } else {
                 let o = played.clone() & game.board.played_o.clone();
                 if o == played {
-                    if !game.x_to_play {
+                    if game.x_to_play {
                         return o_assured_win_score;
                     } else {
                         score = score.min(score - o_assured_win_score);
