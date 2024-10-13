@@ -1,3 +1,5 @@
+use std::fmt::{self, Display};
+
 use nom::{
     bytes::complete::tag,
     character::complete::u8,
@@ -96,5 +98,62 @@ impl Board {
                 ..self.clone()
             },
         }
+    }
+}
+
+impl Display for Board {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let size = self.size as usize;
+        let total_positions = size * size;
+
+        let playable_str = self.playable.to_str_radix(2).pad_start(total_positions, '0');
+        let x_str = self.played_x.to_str_radix(2).pad_start(total_positions, '0');
+        let o_str = self.played_o.to_str_radix(2).pad_start(total_positions, '0');
+
+        let mut result = String::new();
+
+        for i in 0..total_positions {
+            let character = if x_str.chars().nth(i).unwrap() == '1' {
+                'x'
+            } else if o_str.chars().nth(i).unwrap() == '1' {
+                'o'
+            } else if playable_str.chars().nth(i).unwrap() == '1' {
+                '_'
+            } else {
+                '.'
+            };
+
+            // Append character and determine if a newline is needed
+            result.push(character);
+            if (i + 1) % size == 0 {
+                result.push('\n');
+            } else {
+                result.push(' ');
+            }
+        }
+
+        write!(f, "{}", result)
+    }
+}
+
+trait PadStart {
+    fn pad_start(&self, size: usize, with: char) -> String;
+}
+
+impl PadStart for String {
+    fn pad_start(&self, size: usize, with: char) -> String {
+        format!("{:0>size$}", self, size = size).replace('0', &String::from(with))
+    }
+}
+
+impl PadStart for &str {
+    fn pad_start(&self, size: usize, with: char) -> String {
+        self.to_string().pad_start(size, with)
+    }
+}
+
+impl PadStart for BigUint {
+    fn pad_start(&self, size: usize, with: char) -> String {
+        self.to_str_radix(2).pad_start(size, with)
     }
 }
