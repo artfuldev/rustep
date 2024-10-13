@@ -106,9 +106,18 @@ impl Display for Board {
         let size = self.size as usize;
         let total_positions = size * size;
 
-        let playable_str = self.playable.to_str_radix(2).pad_start(total_positions, '0');
-        let x_str = self.played_x.to_str_radix(2).pad_start(total_positions, '0');
-        let o_str = self.played_o.to_str_radix(2).pad_start(total_positions, '0');
+        let playable_str = self
+            .playable
+            .to_str_radix(2)
+            .pad_start(total_positions, '0');
+        let x_str = self
+            .played_x
+            .to_str_radix(2)
+            .pad_start(total_positions, '0');
+        let o_str = self
+            .played_o
+            .to_str_radix(2)
+            .pad_start(total_positions, '0');
 
         let mut result = String::new();
 
