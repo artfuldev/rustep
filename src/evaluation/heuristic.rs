@@ -23,13 +23,17 @@ pub fn heuristic(game: Game) -> i64 {
             if (game.board.playable.clone() & playable.clone()) != playable {
                 continue;
             }
-            let x = played.clone() & game.board.played_x.clone();
-            if x == played && game.x_to_play {
-                return i64::MAX - square + moves_left - 1;
+            if game.x_to_play {
+                let x = played.clone() & game.board.played_x.clone();
+                if x == played {
+                    return i64::MAX - square + moves_left - 1;
+                }
             }
-            let o = played.clone() & game.board.played_o.clone();
-            if o == played && !game.x_to_play {
-                return i64::MIN + square - moves_left + 1;
+            else {
+                let o = played.clone() & game.board.played_o.clone();
+                if o == played {
+                    return i64::MIN + square - moves_left + 1;
+                }
             }
         }
     }
