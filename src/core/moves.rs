@@ -9,7 +9,7 @@ pub type Move = BigUint;
 pub fn moves(game: Game) -> Vec<Move> {
     let mut moves: Vec<Move> = vec![];
     let mut mov: Move = BigUint::from(1u8) << game.board.playable.trailing_zeros().unwrap_or(0);
-    while mov.clone() < game.board.playable.clone() {
+    while mov.clone() <= game.board.playable.clone() {
         if (mov.clone() & game.board.playable.clone()) == mov.clone() {
             moves.push(mov.clone());
         }
@@ -28,9 +28,9 @@ mod tests {
 
     #[test]
     fn test_moves_count() -> Result<()> {
-        let (_, game) = Game::parse("xox/oxo/3_ x")?;
+        let (_, game) = Game::parse("o_x/x2o/o2x x")?;
         let moves = moves(game.clone());
-        assert_eq!(moves.len(), 3);
+        assert_eq!(moves.len(), 1);
         Ok(())
     }
 
