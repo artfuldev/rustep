@@ -46,3 +46,30 @@ impl Player for Evaluator {
         Ok(Position::new(best.clone(), game.board.size.into()))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::evaluation::heuristic;
+
+    use super::*;
+    use anyhow::Result;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_winning_move_for_x() -> Result<()> {
+        let player = Evaluator::new(heuristic);
+        let (_, won) = Game::parse("x2_/_x_/2o_ x")?;
+        let best = format!("{}", player.best(won.clone(), None)?);
+        assert_eq!(best, "c3");
+        Ok(())
+    }
+
+    #[test]
+    fn test_saving_move_for_x() -> Result<()> {
+        let player = Evaluator::new(heuristic);
+        let (_, won) = Game::parse("xox/_o_/3_ x")?;
+        let best = format!("{}", player.best(won.clone(), None)?);
+        assert_eq!(best, "b3");
+        Ok(())
+    }
+}
