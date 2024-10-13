@@ -50,11 +50,11 @@ pub fn heuristic(game: Game) -> i64 {
     for win in wins(game.board.size.into(), game.win_length.into()) {
         let x_winnable = win.clone() & (game.board.played_x.clone() | game.board.playable.clone());
         if x_winnable == win {
-            score += square.pow(x_winnable.count_ones() as u32);
+            score = score.max(score + square.pow(x_winnable.count_ones() as u32));
         }
         let o_winnable = win.clone() & (game.board.played_o.clone() | game.board.playable.clone());
         if o_winnable == win {
-            score -= square.pow(x_winnable.count_ones() as u32);
+            score = score.min(score - square.pow(x_winnable.count_ones() as u32));
         }
     }
     score
