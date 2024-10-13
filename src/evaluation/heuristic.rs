@@ -5,8 +5,9 @@ use super::{assurances, terminated, wins, Termination};
 pub fn heuristic(game: Game) -> i64 {
     let square = i64::from(game.board.size).pow(2);
     let moves_left = game.board.playable.count_ones() as i64;
-    let moves_count = game.board.played_x.count_ones() + game.board.played_o.count_ones();
-    if moves_count / 2 >= u64::from(game.win_length) {
+    let moves_count = (game.board.played_x.count_ones() + game.board.played_o.count_ones()) as i64;
+    let mut score: i64 = 0;
+    if (moves_count + 1) / 2 >= i64::from(game.win_length) {
         if let Some(termination) = terminated(game.clone()) {
             match termination {
                 Termination::Won(true) => {
@@ -50,4 +51,26 @@ pub fn heuristic(game: Game) -> i64 {
         }
     }
     score
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use anyhow::Result;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_game_won_by_x() -> Result<()> {
+        let (_, won) = Game::parse("xox/oxo/oxx o")?;
+        assert_eq!(heuristic(won.clone()), i64::MAX - i64::from(won.board.size).pow(2));
+        Ok(())
+    }
+
+    #[test]
+    fn test_game_won_earlier_is_better() -> Result<()> {
+        let (_, later) = Game::parse("xox/oxo/oxx o")?;
+        let (_, earlier) = Game::parse("3x/2o_/3_ o")?;
+        assert!(heuristic(earlier) > heuristic(later));
+        Ok(())
+    }
 }
