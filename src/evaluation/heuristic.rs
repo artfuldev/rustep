@@ -11,10 +11,10 @@ pub fn heuristic(game: Game) -> i64 {
         if let Some(termination) = terminated(game.clone()) {
             match termination {
                 Termination::Won(true) => {
-                    return i64::MAX - square - moves_left;
+                    return i64::MAX - moves_count;
                 }
                 Termination::Won(false) => {
-                    return i64::MIN + square - moves_left;
+                    return i64::MIN + moves_count;
                 }
                 Termination::Drawn => return 0,
             }
