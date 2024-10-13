@@ -72,4 +72,14 @@ mod tests {
         assert_eq!(best, "b3");
         Ok(())
     }
+
+    #[test]
+    fn test_saving_move_for_x_with_win_length() -> Result<()> {
+        let player = Evaluator::new(heuristic);
+        let (_, mut won) = Game::parse("2o_x_/5_/2_x2_/5_/5_ x")?;
+        won.set_win_length(3);
+        let best = format!("{}", player.best(won.clone(), None)?);
+        assert_eq!(best, "c1");
+        Ok(())
+    }
 }
