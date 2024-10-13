@@ -19,33 +19,6 @@ pub fn heuristic(game: Game) -> i64 {
                 Termination::Drawn => return 0,
             }
         }
-        if game.win_length < game.board.size {
-            let x_assured_win_score = x_win_score - 1;
-            let o_assured_win_score = o_win_score + 1;
-            for (playable, played) in assurances(game.board.size.into(), game.win_length.into()) {
-                if (game.board.playable.clone() & playable.clone()) != playable {
-                    continue;
-                }
-
-                let x = played.clone() & game.board.played_x.clone();
-                if x == played {
-                    if !game.x_to_play {
-                        return x_assured_win_score;
-                    } else {
-                        score = score.max(score + x_assured_win_score);
-                    }
-                } else {
-                    let o = played.clone() & game.board.played_o.clone();
-                    if o == played {
-                        if game.x_to_play {
-                            return o_assured_win_score;
-                        } else {
-                            score = score.min(score - o_assured_win_score);
-                        }
-                    }
-                }
-            }
-        }
     }
     let mut x_win_length: u32 = 0;
     let mut o_win_length: u32 = 0;
@@ -75,11 +48,37 @@ pub fn heuristic(game: Game) -> i64 {
             }
         }
     }
+    let x_assured_win_score = x_win_score - 1;
+    let o_assured_win_score = o_win_score + 1;
     if (game.clone().win_length - (o_win_length as u8)) == 1 && !game.x_to_play {
-        return o_win_score + 1;
+        return o_assured_win_score;
     }
     if (game.clone().win_length - (x_win_length as u8)) == 1 && game.x_to_play {
-        return x_win_score - 1;
+        return x_assured_win_score;
+    }
+    if moves_count / 2 >= i64::from(game.win_length) && game.win_length < game.board.size {
+        for (playable, played) in assurances(game.board.size.into(), game.win_length.into()) {
+            if (game.board.playable.clone() & playable.clone()) != playable {
+                continue;
+            }
+
+            let x = played.clone() & game.board.played_x.clone();
+            if x == played {
+                if !game.x_to_play {
+                    return x_assured_win_score;
+                } else {
+                    score = score.max(score + x_assured_win_score);
+                }
+            }
+            let o = played.clone() & game.board.played_o.clone();
+            if o == played {
+                if game.x_to_play {
+                    return o_assured_win_score;
+                } else {
+                    score = score.min(score - o_assured_win_score);
+                }
+            }
+        }
     }
     score += 2i64.pow(x_win_length) * x_win_count;
     score -= 2i64.pow(o_win_length) * o_win_count;
@@ -171,6 +170,22 @@ mod tests {
     fn test_game_close_to_win_by_o_should_be_lost() -> Result<()> {
         let (_, win_in_next_move) = Game::parse("2_x/_2o/_2x o")?;
         assert!(heuristic(win_in_next_move.clone()) < 0);
+        Ok(())
+    }
+
+    #[test]
+    fn test_larger_game_with_win_length_close_to_win_by_o_should_be_lost() -> Result<()> {
+        let (_, mut win_in_next_move) = Game::parse("2o_x_/2_x2_/2_x2_/5_/5_ o")?;
+        win_in_next_move.set_win_length(3);
+        assert!(heuristic(win_in_next_move.clone()) < 0);
+        Ok(())
+    }
+
+    #[test]
+    fn test_game_with_win_length_close_to_win_by_o_should_not_be_lost() -> Result<()> {
+        let (_, mut win_in_next_move) = Game::parse("2o2x_/5_/2_x2_/5_/5_ o")?;
+        win_in_next_move.set_win_length(3);
+        assert!(heuristic(win_in_next_move.clone()) >= 0);
         Ok(())
     }
 
