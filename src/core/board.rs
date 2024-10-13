@@ -6,7 +6,7 @@ use nom::{
     sequence::tuple,
     IResult,
 };
-use num::{bigint::Sign, BigInt, BigUint};
+use num::BigUint;
 
 use super::{Cell, Move};
 
@@ -81,12 +81,9 @@ impl Board {
 
     pub fn make(self, mov: Move, x_to_play: bool) -> Self {
         let one = BigUint::from(1u8);
-        let mask = (one.clone() << (self.size * self.size)) - one.clone();
-        let playable = (self.playable.clone() & mask.clone())
-            & ((!(BigInt::from_biguint(Sign::NoSign, mov.clone() & mask.clone())))
-                .to_biguint()
-                .unwrap_or(BigUint::ZERO)
-                & mask);
+        let full_mask = (one.clone() << (self.size * self.size)) - one.clone();
+        let inverted_move = &full_mask ^ mov.clone();
+        let playable = self.clone().playable & inverted_move;
         match x_to_play {
             true => Self {
                 playable,
