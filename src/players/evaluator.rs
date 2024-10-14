@@ -21,7 +21,7 @@ impl Evaluator {
 }
 
 impl Player for Evaluator {
-    fn best(&mut self, game: &mut Game, _: Option<Time>) -> Result<Position> {
+    fn best(self, game: Game, _: Option<Time>) -> Result<Position> {
         if game.board.playable.clone() == BigUint::ZERO {
             bail!("No moves left!");
         }
@@ -32,9 +32,8 @@ impl Player for Evaluator {
         };
         let mut best_moves: Vec<Move> = vec![];
         for mov in moves(game.clone()) {
-            game.mutable_make(mov.clone());
-            let evaluation = sign * self.0.score(game);
-            game.mutable_unmake(mov.clone());
+            let made = game.clone().make(mov.clone());
+            let evaluation = sign * self.0.score(made);
             if evaluation < score {
                 continue;
             }
@@ -61,28 +60,28 @@ mod tests {
 
     #[test]
     fn test_winning_move_for_x() -> Result<()> {
-        let mut player = Evaluator::new(Smart);
-        let (_, mut won) = Game::parse("x2_/_x_/2o_ x")?;
-        let best = format!("{}", player.best(&mut won, None)?);
+        let player = Evaluator::new(Smart);
+        let (_, won) = Game::parse("x2_/_x_/2o_ x")?;
+        let best = format!("{}", player.best(won.clone(), None)?);
         assert_eq!(best, "c3");
         Ok(())
     }
 
     #[test]
     fn test_saving_move_for_x() -> Result<()> {
-        let mut player = Evaluator::new(Smart);
-        let (_, mut won) = Game::parse("xox/_o_/3_ x")?;
-        let best = format!("{}", player.best(&mut won, None)?);
+        let player = Evaluator::new(Smart);
+        let (_, won) = Game::parse("xox/_o_/3_ x")?;
+        let best = format!("{}", player.best(won.clone(), None)?);
         assert_eq!(best, "b3");
         Ok(())
     }
 
     #[test]
     fn test_saving_move_for_x_with_win_length() -> Result<()> {
-        let mut player = Evaluator::new(Smart);
+        let player = Evaluator::new(Smart);
         let (_, mut won) = Game::parse("2o_x_/5_/2_x2_/5_/5_ x")?;
         won.set_win_length(3);
-        let best = format!("{}", player.best(&mut won, None)?);
+        let best = format!("{}", player.best(won.clone(), None)?);
         assert_eq!(best, "c1");
         Ok(())
     }

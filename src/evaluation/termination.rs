@@ -10,7 +10,7 @@ pub enum Termination {
     Drawn,
 }
 
-pub fn terminated(game: &mut Game) -> Option<Termination> {
+pub fn terminated(game: Game) -> Option<Termination> {
     for win in wins(game.board.size.into(), game.win_length.into()) {
         if (game.board.played_x.clone() & win.clone()) == win {
             return Some(Termination::Won(true));
@@ -25,7 +25,7 @@ pub fn terminated(game: &mut Game) -> Option<Termination> {
     return None;
 }
 
-pub fn terminal(game: &mut Game) -> bool {
+pub fn terminal(game: Game) -> bool {
     terminated(game).is_some()
 }
 
@@ -37,57 +37,57 @@ mod tests {
 
     #[test]
     fn test_x_wins() -> Result<()> {
-        let (_, mut game) = Game::parse("x_x/_xo/x_o x")?;
-        assert_eq!(terminated(&mut game), Some(Termination::Won(true)));
+        let (_, game) = Game::parse("x_x/_xo/x_o x")?;
+        assert_eq!(terminated(game), Some(Termination::Won(true)));
         Ok(())
     }
 
     #[test]
     fn test_o_wins() -> Result<()> {
-        let (_, mut game) = Game::parse("x_o/_xo/x_o x")?;
-        assert_eq!(terminated(&mut game), Some(Termination::Won(false)));
+        let (_, game) = Game::parse("x_o/_xo/x_o x")?;
+        assert_eq!(terminated(game), Some(Termination::Won(false)));
         Ok(())
     }
 
     #[test]
     fn test_draw() -> Result<()> {
-        let (_, mut game) = Game::parse("xox/xox/oxo x")?;
-        assert_eq!(terminated(&mut game), Some(Termination::Drawn));
+        let (_, game) = Game::parse("xox/xox/oxo x")?;
+        assert_eq!(terminated(game), Some(Termination::Drawn));
         Ok(())
     }
 
     #[test]
     fn test_no_termination() -> Result<()> {
-        let (_, mut game) = Game::parse("xox/xox/o_o x")?;
-        assert_eq!(terminated(&mut game), None);
+        let (_, game) = Game::parse("xox/xox/o_o x")?;
+        assert_eq!(terminated(game), None);
         Ok(())
     }
 
     #[test]
     fn test_terminal_x_wins() -> Result<()> {
-        let (_, mut game) = Game::parse("x_x/_xo/x_o x")?;
-        assert!(terminal(&mut game));
+        let (_, game) = Game::parse("x_x/_xo/x_o x")?;
+        assert!(terminal(game));
         Ok(())
     }
 
     #[test]
     fn test_terminal_o_wins() -> Result<()> {
-        let (_, mut game) = Game::parse("x_o/_xo/x_o x")?;
-        assert!(terminal(&mut game));
+        let (_, game) = Game::parse("x_o/_xo/x_o x")?;
+        assert!(terminal(game));
         Ok(())
     }
 
     #[test]
     fn test_terminal_draw() -> Result<()> {
-        let (_, mut game) = Game::parse("xox/xox/oxo x")?;
-        assert!(terminal(&mut game));
+        let (_, game) = Game::parse("xox/xox/oxo x")?;
+        assert!(terminal(game));
         Ok(())
     }
 
     #[test]
     fn test_not_terminal() -> Result<()> {
-        let (_, mut game) = Game::parse("xox/xox/o_o x")?;
-        assert!(!terminal(&mut game));
+        let (_, game) = Game::parse("xox/xox/o_o x")?;
+        assert!(!terminal(game));
         Ok(())
     }
 }

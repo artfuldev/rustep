@@ -1,19 +1,17 @@
-use crate::core::Game;
-
 use super::{assurances, terminated, wins, Heuristic, Termination};
 
 #[derive(Clone, Copy)]
 pub struct Smart;
 
 impl Heuristic for Smart {
-    fn score(&self, game: &mut Game) -> i64 {
+    fn score(&self, game: crate::core::Game) -> i64 {
         let moves_count =
             (game.board.played_x.count_ones() + game.board.played_o.count_ones()) as i64;
         let mut score: i64 = 0;
         let x_win_score = i64::MAX - moves_count;
         let o_win_score = i64::MIN + moves_count;
         if (moves_count + 1) / 2 >= i64::from(game.win_length) {
-            if let Some(termination) = terminated(game) {
+            if let Some(termination) = terminated(game.clone()) {
                 match termination {
                     Termination::Won(true) => {
                         return x_win_score + 1;
@@ -103,9 +101,9 @@ mod tests {
 
     #[test]
     fn test_game_won_by_x() -> Result<()> {
-        let (_, mut won) = Game::parse("xox/oxo/oxx o")?;
+        let (_, won) = Game::parse("xox/oxo/oxx o")?;
         assert_eq!(
-            Smart.score(&mut won),
+            Smart.score(won.clone()),
             i64::MAX - i64::from(won.board.size).pow(2) + 1
         );
         Ok(())
@@ -113,9 +111,9 @@ mod tests {
 
     #[test]
     fn test_game_won_earlier_is_better() -> Result<()> {
-        let (_, mut later) = Game::parse("xox/oxo/oxx o")?;
-        let (_, mut earlier) = Game::parse("3x/2o_/3_ o")?;
-        assert!(Smart.score(&mut earlier) > Smart.score(&mut later));
+        let (_, later) = Game::parse("xox/oxo/oxx o")?;
+        let (_, earlier) = Game::parse("3x/2o_/3_ o")?;
+        assert!(Smart.score(earlier) > Smart.score(later));
         Ok(())
     }
 
@@ -125,39 +123,39 @@ mod tests {
         assured.set_win_length(2);
         let (_, mut won) = Game::parse("_2x/o2_/3_ o")?;
         won.set_win_length(2);
-        assert!(Smart.score(&mut won) > Smart.score(&mut assured));
+        assert!(Smart.score(won) > Smart.score(assured));
         Ok(())
     }
 
     #[test]
     fn test_c3_is_better_than_c2() -> Result<()> {
-        let (_, mut c2) = Game::parse("3_/2_x/3_ o")?;
-        let (_, mut c3) = Game::parse("3_/3_/2_x o")?;
-        assert!(Smart.score(&mut c3) > Smart.score(&mut c2));
+        let (_, c2) = Game::parse("3_/2_x/3_ o")?;
+        let (_, c3) = Game::parse("3_/3_/2_x o")?;
+        assert!(Smart.score(c3) > Smart.score(c2));
         Ok(())
     }
 
     #[test]
     fn test_b2_is_better_than_c3() -> Result<()> {
-        let (_, mut c3) = Game::parse("3_/3_/2_x o")?;
-        let (_, mut b2) = Game::parse("3_/_x_/3_ o")?;
-        assert!(Smart.score(&mut b2) > Smart.score(&mut c3));
+        let (_, c3) = Game::parse("3_/3_/2_x o")?;
+        let (_, b2) = Game::parse("3_/_x_/3_ o")?;
+        assert!(Smart.score(b2) > Smart.score(c3));
         Ok(())
     }
 
     #[test]
     fn test_a1_is_equal_to_c3() -> Result<()> {
-        let (_, mut a1) = Game::parse("x2_/3_/3_ o")?;
-        let (_, mut c3) = Game::parse("3_/3_/2_x o")?;
-        assert_eq!(Smart.score(&mut a1), Smart.score(&mut c3));
+        let (_, a1) = Game::parse("x2_/3_/3_ o")?;
+        let (_, c3) = Game::parse("3_/3_/2_x o")?;
+        assert_eq!(Smart.score(a1), Smart.score(c3));
         Ok(())
     }
 
     #[test]
     fn test_b3_is_better_than_a2() -> Result<()> {
-        let (_, mut a2) = Game::parse("xox/xo_/3_ o")?;
-        let (_, mut b3) = Game::parse("xo_/xo_/_x_ o")?;
-        assert!(Smart.score(&mut b3) > Smart.score(&mut a2));
+        let (_, a2) = Game::parse("xox/xo_/3_ o")?;
+        let (_, b3) = Game::parse("xo_/xo_/_x_ o")?;
+        assert!(Smart.score(b3) > Smart.score(a2));
         Ok(())
     }
 
@@ -167,14 +165,19 @@ mod tests {
         assured.set_win_length(2);
         let (_, mut unassured) = Game::parse("_x_/_o_/3_ x")?;
         unassured.set_win_length(2);
-        assert_ne!(Smart.score(&mut unassured), Smart.score(&mut assured));
+        println!(
+            "{} {}",
+            -Smart.score(unassured.clone()),
+            Smart.score(assured.clone())
+        );
+        assert_ne!(Smart.score(unassured), Smart.score(assured));
         Ok(())
     }
 
     #[test]
     fn test_game_close_to_win_by_o_should_be_lost() -> Result<()> {
-        let (_, mut win_in_next_move) = Game::parse("2_x/_2o/_2x o")?;
-        assert!(Smart.score(&mut win_in_next_move) < 0);
+        let (_, win_in_next_move) = Game::parse("2_x/_2o/_2x o")?;
+        assert!(Smart.score(win_in_next_move.clone()) < 0);
         Ok(())
     }
 
@@ -182,7 +185,7 @@ mod tests {
     fn test_larger_game_with_win_length_close_to_win_by_o_should_be_lost() -> Result<()> {
         let (_, mut win_in_next_move) = Game::parse("2o_x_/2_x2_/2_x2_/5_/5_ o")?;
         win_in_next_move.set_win_length(3);
-        assert!(Smart.score(&mut win_in_next_move) < 0);
+        assert!(Smart.score(win_in_next_move.clone()) < 0);
         Ok(())
     }
 
@@ -190,14 +193,14 @@ mod tests {
     fn test_game_with_win_length_close_to_win_by_o_should_not_be_lost() -> Result<()> {
         let (_, mut win_in_next_move) = Game::parse("2o2x_/5_/2_x2_/5_/5_ o")?;
         win_in_next_move.set_win_length(3);
-        assert!(Smart.score(&mut win_in_next_move) >= 0);
+        assert!(Smart.score(win_in_next_move.clone()) >= 0);
         Ok(())
     }
 
     #[test]
     fn test_game_close_to_win_by_x_should_be_winning() -> Result<()> {
-        let (_, mut win_in_next_move) = Game::parse("oxo/_x_/x_o x")?;
-        assert!(Smart.score(&mut win_in_next_move) > 0);
+        let (_, win_in_next_move) = Game::parse("oxo/_x_/x_o x")?;
+        assert!(Smart.score(win_in_next_move.clone()) > 0);
         Ok(())
     }
 
@@ -205,7 +208,7 @@ mod tests {
     fn test_game_o_at_e4_loses() -> Result<()> {
         let (_, mut lost) = Game::parse("3o3x4o2x3o/2xoxo2xo2xoxo2x/ox2oxox_x2o_o2x/xox2o2_3ox4o/4ox_oxo_2ox_o/_o2x2o_x_xo2_x_/x_2o5_o_xo2_/3_xo2_ox6_/_x_o2_x7_x/4_x6_2x2_/2_x_x5_x4_/xo3_x4_x2_x_/3_x7_x3_/oxo6_x4_x/4_x7_x2_ o")?;
         lost.set_win_length(5);
-        assert!(Smart.score(&mut lost) < 0);
+        assert!(Smart.score(lost.clone()) < 0);
         Ok(())
     }
 
@@ -213,7 +216,7 @@ mod tests {
     fn test_game_x_at_e4_is_still_in_the_game() -> Result<()> {
         let (_, mut still) = Game::parse("3o3x4o2x3o/2xoxo2xo2xoxo2x/ox2oxox_x2o_o2x/xoxox2_3ox4o/4ox_oxo_2ox_o/_o2x2o_x_xo2_x_/x_2o5_o_xo2_/3_xo2_ox6_/_x_o2_x7_x/4_x6_2x2_/2_x_x5_x4_/xo3_x4_x2_x_/3_x7_x3_/oxo6_x4_x/4_x7_x2_ o")?;
         still.set_win_length(5);
-        assert!(Smart.score(&mut still) >= 0);
+        assert!(Smart.score(still.clone()) >= 0);
         Ok(())
     }
 }
