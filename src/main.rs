@@ -9,8 +9,8 @@ use std::{
 };
 
 use crate::core::Command;
-use evaluation::heuristic;
-use players::{Evaluator, Player};
+use evaluation::Dumb;
+use players::{Minimax, Player};
 
 const URL: &str = "https://github.com/artfuldev/rustep";
 
@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let player = &Evaluator::new(heuristic);
+    let player = &Minimax::new(Dumb);
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
