@@ -16,11 +16,11 @@ impl Random {
 }
 
 impl Player for Random {
-    fn best(self, game: Game, _: Option<Time>) -> Result<Position> {
+    fn best(&mut self, game: &mut Game, _: Option<Time>) -> Result<Position> {
         if game.board.playable == BigUint::ZERO {
             bail!("No moves left!");
         }
-        let mut rng = self.0;
+        let rng = &mut self.0;
         let square = u16::from(game.board.size).pow(2);
         let distribution = Uniform::new(0, square);
         let mut sample = rng.sample(distribution);

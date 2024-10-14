@@ -2,12 +2,12 @@ use crate::core::Game;
 
 use super::{terminated, wins, Heuristic, Termination};
 
-fn score(game: Game) -> i64 {
+fn score(game: &mut Game) -> i64 {
     let mut score: i64 = 0;
     let x_win_score = i64::MAX - 1000;
     let o_win_score = i64::MIN + 1000;
 
-    if let Some(termination) = terminated(game.clone()) {
+    if let Some(termination) = terminated(game) {
         match termination {
             Termination::Won(true) => return x_win_score,
             Termination::Won(false) => return o_win_score,
@@ -47,7 +47,7 @@ fn evaluate_line(in_line: u32, win_length: u8, size: u8) -> i64 {
 pub struct Dumb;
 
 impl Heuristic for Dumb {
-    fn score(&self, game: Game) -> i64 {
+    fn score(&self, game: &mut Game) -> i64 {
         score(game)
     }
 }

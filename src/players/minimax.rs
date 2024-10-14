@@ -19,22 +19,24 @@ impl Minimax {
         Self(Arc::new(evaluate))
     }
 
-    fn score(self, game: Game, depth: u8, maximizing: bool) -> i64 {
-        if depth == 0 || terminal(game.clone()) {
+    fn score(self, game: &mut Game, depth: u8, maximizing: bool) -> i64 {
+        if depth == 0 || terminal(game) {
             return self.0.score(game);
         }
         if maximizing {
             let mut value = i64::MIN;
             for mov in moves(game.clone()) {
-                let made = game.clone().make(mov);
-                value = value.max(self.clone().score(made, depth - 1, false));
+                game.mutable_make(mov.clone());
+                value = value.max(self.clone().score(game, depth - 1, false));
+                game.mutable_unmake(mov);
             }
             return value;
         } else {
             let mut value = i64::MAX;
             for mov in moves(game.clone()) {
-                let made = game.clone().make(mov);
-                value = value.min(self.clone().score(made, depth - 1, true));
+                game.mutable_make(mov.clone());
+                value = value.min(self.clone().score(game, depth - 1, true));
+                game.mutable_unmake(mov);
             }
             return value;
         }
@@ -42,7 +44,7 @@ impl Minimax {
 }
 
 impl Player for Minimax {
-    fn best(self, game: Game, _: Option<Time>) -> Result<Position> {
+    fn best(&mut self, game: &mut Game, _: Option<Time>) -> Result<Position> {
         if game.board.playable.clone() == BigUint::ZERO {
             bail!("No moves left!");
         }
@@ -53,8 +55,9 @@ impl Player for Minimax {
         };
         let mut best_moves: Vec<Move> = vec![];
         for mov in moves(game.clone()) {
-            let made = game.clone().make(mov.clone());
-            let evaluation = sign * self.clone().score(made, 1, !game.x_to_play);
+            game.mutable_make(mov.clone());
+            let evaluation = sign * self.clone().score(game, 1, !game.x_to_play);
+            game.mutable_unmake(mov.clone());
             if evaluation < score {
                 continue;
             }
@@ -82,28 +85,28 @@ mod tests {
 
     #[test]
     fn test_winning_move_for_x() -> Result<()> {
-        let player = Minimax::new(Dumb);
-        let (_, won) = Game::parse("x2_/_x_/2o_ x")?;
-        let best = format!("{}", player.best(won.clone(), None)?);
+        let mut player = Minimax::new(Dumb);
+        let (_, mut won) = Game::parse("x2_/_x_/2o_ x")?;
+        let best = format!("{}", player.best(&mut won, None)?);
         assert_eq!(best, "c3");
         Ok(())
     }
 
     #[test]
     fn test_saving_move_for_x() -> Result<()> {
-        let player: Minimax = Minimax::new(Dumb);
-        let (_, won) = Game::parse("xox/_o_/3_ x")?;
-        let best = format!("{}", player.best(won.clone(), None)?);
+        let mut player: Minimax = Minimax::new(Dumb);
+        let (_, mut won) = Game::parse("xox/_o_/3_ x")?;
+        let best = format!("{}", player.best(&mut won, None)?);
         assert_eq!(best, "b3");
         Ok(())
     }
 
     #[test]
     fn test_saving_move_for_x_with_win_length() -> Result<()> {
-        let player = Minimax::new(Dumb);
+        let mut player = Minimax::new(Dumb);
         let (_, mut won) = Game::parse("2o_x_/5_/2_x2_/5_/5_ x")?;
         won.set_win_length(3);
-        let best = format!("{}", player.best(won.clone(), None)?);
+        let best = format!("{}", player.best(&mut won, None)?);
         assert_eq!(best, "c1");
         Ok(())
     }
