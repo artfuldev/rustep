@@ -4,15 +4,18 @@ use anyhow::{bail, Result};
 use num::BigUint;
 use rand::{seq::SliceRandom, thread_rng};
 
-use crate::core::{moves, Game, Move, Position, Time};
+use crate::{
+    core::{moves, Game, Move, Position, Time},
+    evaluation::Heuristic,
+};
 
 use super::Player;
 
 #[derive(Clone)]
-pub struct Evaluator(Arc<dyn Fn(Game) -> i64 + Send + Sync + 'static>);
+pub struct Evaluator(Arc<dyn Heuristic + Send + Sync + 'static>);
 
 impl Evaluator {
-    pub fn new(evaluate: impl Fn(Game) -> i64 + Send + Sync + 'static) -> Self {
+    pub fn new(evaluate: impl Heuristic + Send + Sync + 'static) -> Self {
         Self(Arc::new(evaluate))
     }
 }
@@ -30,7 +33,7 @@ impl Player for Evaluator {
         let mut best_moves: Vec<Move> = vec![];
         for mov in moves(game.clone()) {
             let made = game.clone().make(mov.clone());
-            let evaluation = sign * self.0(made);
+            let evaluation = sign * self.0.score(made);
             if evaluation < score {
                 continue;
             }
@@ -49,7 +52,7 @@ impl Player for Evaluator {
 
 #[cfg(test)]
 mod tests {
-    use crate::evaluation::heuristic;
+    use crate::evaluation::Smart;
 
     use super::*;
     use anyhow::Result;
@@ -57,7 +60,7 @@ mod tests {
 
     #[test]
     fn test_winning_move_for_x() -> Result<()> {
-        let player = Evaluator::new(heuristic);
+        let player = Evaluator::new(Smart);
         let (_, won) = Game::parse("x2_/_x_/2o_ x")?;
         let best = format!("{}", player.best(won.clone(), None)?);
         assert_eq!(best, "c3");
@@ -66,7 +69,7 @@ mod tests {
 
     #[test]
     fn test_saving_move_for_x() -> Result<()> {
-        let player = Evaluator::new(heuristic);
+        let player = Evaluator::new(Smart);
         let (_, won) = Game::parse("xox/_o_/3_ x")?;
         let best = format!("{}", player.best(won.clone(), None)?);
         assert_eq!(best, "b3");
@@ -75,7 +78,7 @@ mod tests {
 
     #[test]
     fn test_saving_move_for_x_with_win_length() -> Result<()> {
-        let player = Evaluator::new(heuristic);
+        let player = Evaluator::new(Smart);
         let (_, mut won) = Game::parse("2o_x_/5_/2_x2_/5_/5_ x")?;
         won.set_win_length(3);
         let best = format!("{}", player.best(won.clone(), None)?);
