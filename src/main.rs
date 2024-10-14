@@ -9,7 +9,7 @@ use std::{
 };
 
 use crate::core::Command;
-use evaluation::Dumb;
+use evaluation::Smart;
 use players::{Minimax, Player};
 
 const URL: &str = "https://github.com/artfuldev/rustep";
@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let player = &Minimax::new(Dumb);
+    let player = &Minimax::new(Smart);
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
