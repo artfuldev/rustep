@@ -41,4 +41,110 @@ impl Game {
             ..self.clone()
         }
     }
+
+    pub fn mutable_make(&mut self, mov: Move) {
+        self.board.mutable_make(mov.clone(), self.x_to_play);
+        self.x_to_play = !self.x_to_play;
+    }
+
+    pub fn mutable_unmake(&mut self, mov: Move) {
+        self.board.mutable_unmake(mov.clone(), self.x_to_play);
+        self.x_to_play = !self.x_to_play;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::core::moves;
+
+    use super::*;
+    use num::BigUint;
+    use anyhow::Result;
+    use pretty_assertions::{assert_eq, assert_ne};
+
+    #[test]
+    fn test_make_removes_playable() -> Result<()> {
+        let (_, mut game) = Game::parse("3_/3_/3_ x")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        game.mutable_make(mov.clone());
+        assert!(!moves(game).contains(&mov));
+        Ok(())
+    }
+
+    #[test]
+    fn test_make_changes_side_to_play() -> Result<()> {
+        let (_, mut game) = Game::parse("3_/3_/3_ x")?;
+        let clone = game.clone();
+        let mov = BigUint::from(1u8) << 4u8;
+        game.mutable_make(mov.clone());
+        assert_ne!(game.x_to_play, clone.x_to_play);
+        Ok(())
+    }
+
+    #[test]
+    fn test_make_adds_x_if_x_to_play() -> Result<()> {
+        let (_, mut game) = Game::parse("3_/3_/3_ x")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        game.mutable_make(mov.clone());
+        assert_eq!(game.board.played_x.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_make_adds_o_if_o_to_play() -> Result<()> {
+        let (_, mut game) = Game::parse("3_/3_/3_ o")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        game.mutable_make(mov.clone());
+        assert_eq!(game.board.played_o.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_unmake_readds_playable() -> Result<()> {
+        let (_, mut game) = Game::parse("3_/_x_/3_ o")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        game.mutable_unmake(mov.clone());
+        assert_eq!(game.board.playable.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_unmake_changes_side_to_play() -> Result<()> {
+        let (_, mut game) = Game::parse("3_/_x_/3_ o")?;
+        let clone = game.clone();
+        let mov = BigUint::from(1u8) << 4u8;
+        game.mutable_unmake(mov.clone());
+        assert_ne!(game.x_to_play, clone.x_to_play);
+        Ok(())
+    }
+
+    #[test]
+    fn test_unmake_removes_o_if_x_to_play() -> Result<()> {
+        let (_, mut game) = Game::parse("3_/xo_/3_ x")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        game.mutable_unmake(mov.clone());
+        assert_ne!(game.board.played_o.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_unmake_removes_x_if_o_to_play() -> Result<()> {
+        let (_, mut game) = Game::parse("3_/_x_/3_ o")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        game.mutable_unmake(mov.clone());
+        assert_ne!(game.board.played_x.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_make_unmake_results_in_original() -> Result<()> {
+        let (_, mut game) = Game::parse("3_/3_/3_ x")?;
+        let clone = game.clone();
+        let mov = BigUint::from(1u8);
+        game.mutable_make(mov.clone());
+        game.mutable_unmake(mov.clone());
+        assert_eq!(clone, game);
+        Ok(())
+    }
+
 }
