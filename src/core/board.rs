@@ -99,6 +99,38 @@ impl Board {
             },
         }
     }
+
+    pub fn mutable_make(&mut self, mov: Move, x_to_play: bool) {
+        let one = BigUint::from(1u8);
+        let full_mask = (one.clone() << (self.size * self.size)) - one.clone();
+        let inverted_move = &full_mask ^ mov.clone();
+        self.playable &= inverted_move;
+
+        match x_to_play {
+            true => {
+                self.played_x |= mov;
+            }
+            false => {
+                self.played_o |= mov;
+            }
+        }
+    }
+
+    pub fn mutable_unmake(&mut self, mov: Move, x_to_play: bool) {
+        let one = BigUint::from(1u8);
+        let full_mask = (one.clone() << (self.size * self.size)) - one.clone();
+        let inverted_move = &full_mask ^ mov.clone();
+        self.playable |= mov;
+
+        match x_to_play {
+            true => {
+                self.played_o &= inverted_move;
+            }
+            false => {
+                self.played_x &= inverted_move;
+            }
+        }
+    }
 }
 
 impl Display for Board {
@@ -165,4 +197,78 @@ impl PadStart for BigUint {
     fn pad_start(&self, size: usize, with: char) -> String {
         self.to_str_radix(2).pad_start(size, with)
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use num::BigUint;
+    use anyhow::Result;
+    use pretty_assertions::{assert_eq, assert_ne};
+
+    #[test]
+    fn test_make_removes_playable() -> Result<()> {
+        let (_, mut board) = Board::parse("3_/3_/3_")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        board.mutable_make(mov.clone(), true);
+        assert_ne!(board.playable.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_make_adds_x_if_x_to_play() -> Result<()> {
+        let (_, mut board) = Board::parse("3_/3_/3_")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        board.mutable_make(mov.clone(), true);
+        assert_eq!(board.played_x.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_make_adds_o_if_o_to_play() -> Result<()> {
+        let (_, mut board) = Board::parse("3_/3_/3_")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        board.mutable_make(mov.clone(), false);
+        assert_eq!(board.played_o.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_unmake_readds_playable() -> Result<()> {
+        let (_, mut board) = Board::parse("3_/_x_/3_")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        board.mutable_unmake(mov.clone(), false);
+        assert_eq!(board.playable.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_unmake_removes_o_if_x_to_play() -> Result<()> {
+        let (_, mut board) = Board::parse("3_/xo_/3_")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        board.mutable_unmake(mov.clone(), true);
+        assert_ne!(board.played_o.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_unmake_removes_x_if_o_to_play() -> Result<()> {
+        let (_, mut board) = Board::parse("3_/_x_/3_")?;
+        let mov = BigUint::from(1u8) << 4u8;
+        board.mutable_unmake(mov.clone(), false);
+        assert_ne!(board.played_x.clone() & mov.clone(), mov.clone());
+        Ok(())
+    }
+
+    #[test]
+    fn test_make_unmake_results_in_original() -> Result<()> {
+        let (_, mut board) = Board::parse("3_/3_/3_")?;
+        let clone = board.clone();
+        let mov = BigUint::from(1u8);
+        board.mutable_make(mov.clone(), true);
+        board.mutable_unmake(mov.clone(), false);
+        assert_eq!(clone, board);
+        Ok(())
+    }
+
 }
