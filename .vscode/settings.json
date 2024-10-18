@@ -3,5 +3,6 @@
         "biguint",
         "multispace",
         "rngs",
+        "zobrist"
     ]
 }
