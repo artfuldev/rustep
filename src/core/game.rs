@@ -140,6 +140,8 @@ impl Game {
 
 #[cfg(test)]
 mod tests {
+    use std::time::{Duration, Instant};
+
     use super::*;
     use anyhow::Result;
     use pretty_assertions::{assert_eq, assert_ne};
@@ -290,6 +292,14 @@ mod tests {
         game.play(Position(1, 1));
         game.undo();
         assert_eq!(game.hash, clone.hash);
+        Ok(())
+    }
+
+    #[test]
+    fn test_parse_takes_little_time_for_15x15_board() -> Result<()> {
+        let start = Instant::now();
+        let _ = Game::parse("3_/3_/3_ x")?;
+        assert!(start.elapsed() < Duration::from_micros(500));
         Ok(())
     }
 }
