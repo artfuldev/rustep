@@ -1,5 +1,4 @@
 pub mod core;
-pub mod evaluation;
 pub mod players;
 
 use std::{
@@ -9,8 +8,7 @@ use std::{
 };
 
 use crate::core::Command;
-use evaluation::Smart;
-use players::{Minimax, Player};
+use players::{Player, Random};
 
 const URL: &str = "https://github.com/artfuldev/rustep";
 
@@ -18,7 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let player = &Minimax::new(Smart);
+    let player = &Random;
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
@@ -40,20 +38,17 @@ fn main() -> Result<(), Box<dyn Error>> {
                     writeln!(stdout, "identify ok")?;
                     stdout.flush()?;
                 }
-                Command::Move(game, time) => {
-                    let position = player.clone().best(game, time);
-                    match position {
-                        Ok(position) => {
-                            let mut stdout = io::stdout().lock();
-                            writeln!(stdout, "best {}", position)?;
-                        }
-                        Err(error) => {
-                            let mut stderr = io::stderr().lock();
-                            writeln!(stderr, "move error: {}", error)?;
-                            stderr.flush()?;
-                        }
+                Command::Move(game, time) => match player.clone().best(game, time) {
+                    Ok(position) => {
+                        let mut stdout = io::stdout().lock();
+                        writeln!(stdout, "best {}", position)?;
                     }
-                }
+                    Err(error) => {
+                        let mut stderr = io::stderr().lock();
+                        writeln!(stderr, "move error: {}", error)?;
+                        stderr.flush()?;
+                    }
+                },
                 Command::Quit => {
                     process::exit(0);
                 }

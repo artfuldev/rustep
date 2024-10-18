@@ -1,17 +1,16 @@
-mod board;
-mod cell;
-mod command;
-mod duration;
-mod game;
-mod moves;
-mod position;
-mod time;
+pub mod cell;
+pub mod command;
+pub mod duration;
+pub mod game;
+pub mod position;
+pub mod side;
+pub mod time;
+mod zobrist;
 
-pub use board::*;
 pub use cell::*;
 pub use command::*;
 pub use duration::*;
 pub use game::*;
-pub use moves::*;
 pub use position::*;
+pub use side::*;
 pub use time::*;

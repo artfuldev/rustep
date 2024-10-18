@@ -1,11 +1,12 @@
 use nom::{branch::alt, bytes::complete::tag, combinator::value, IResult};
 
-#[derive(Clone)]
+use super::Side;
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Cell {
     Unplayable,
     Playable,
-    PlayedX,
-    PlayedO,
+    Played(Side),
 }
 
 impl Cell {
@@ -13,8 +14,8 @@ impl Cell {
         alt((
             value(Cell::Unplayable, tag(".")),
             value(Cell::Playable, tag("_")),
-            value(Cell::PlayedX, tag("x")),
-            value(Cell::PlayedO, tag("o")),
+            value(Cell::Played(Side::X), tag("x")),
+            value(Cell::Played(Side::O), tag("o")),
         ))(input)
     }
 }
