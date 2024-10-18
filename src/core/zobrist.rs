@@ -48,3 +48,17 @@ impl Zobrist {
 pub fn zobrist(size: u8) -> Zobrist {
     Zobrist::new(size, &mut thread_rng())
 }
+
+#[cfg(test)]
+mod tests {
+    use std::time::{Duration, Instant};
+
+    use super::zobrist;
+
+    #[test]
+    fn test_zobrist_for_size_15_does_not_take_long() {
+        let start = Instant::now();
+        let _ = zobrist(15);
+        assert!(start.elapsed() < Duration::from_micros(1500));
+    }
+}
