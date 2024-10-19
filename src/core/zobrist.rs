@@ -1,6 +1,6 @@
 use memoize::memoize;
 use rand::{rngs::ThreadRng, thread_rng, RngCore};
-use rustc_hash::{FxHashMap, FxHashSet};
+use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
 
 use super::{Cell, Position, Side};
 
@@ -18,9 +18,9 @@ impl Zobrist {
 
     pub fn new(size: u8, rng: &mut ThreadRng) -> Self {
         let mut used: FxHashSet<u64> = FxHashSet::default();
-        let mut moves: FxHashMap<(Position, Cell), u64> = FxHashMap::default();
-        let mut sides: FxHashMap<Side, u64> = FxHashMap::default();
-        for side in vec![Side::X, Side::O] {
+        let mut moves: FxHashMap<(Position, Cell), u64> = FxHashMap::with_capacity_and_hasher((size as usize).pow(2) * 3, FxBuildHasher);
+        let mut sides: FxHashMap<Side, u64> = FxHashMap::with_capacity_and_hasher(2, FxBuildHasher);
+        for side in [Side::X, Side::O] {
             let mut value = rng.next_u64();
             while used.contains(&value) {
                 value = rng.next_u64();
@@ -29,7 +29,7 @@ impl Zobrist {
         }
         for row in 0..size {
             for column in 0..size {
-                for cell in vec![Cell::Playable, Cell::Played(Side::X), Cell::Played(Side::O)] {
+                for cell in [Cell::Playable, Cell::Played(Side::X), Cell::Played(Side::O)] {
                     let key = (Position(row, column), cell.clone());
                     let mut value = rng.next_u64();
                     while used.contains(&value) {
