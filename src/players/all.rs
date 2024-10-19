@@ -6,7 +6,7 @@ use super::looker::Looker;
 pub struct All;
 
 impl Looker for All {
-    fn moves(&mut self, game: Game) -> Vec<Position> {
+    fn moves(&mut self, game: &Game) -> Vec<Position> {
         Vec::from_iter(game.playable.iter().map(|x| x.clone()))
     }
 }

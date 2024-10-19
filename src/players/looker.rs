@@ -1,7 +1,7 @@
 use crate::core::{Game, Position};
 
 pub trait Looker: LookerClone {
-    fn moves(&mut self, game: Game) -> Vec<Position>;
+    fn moves(&mut self, game: &Game) -> Vec<Position>;
 }
 
 pub trait LookerClone {
