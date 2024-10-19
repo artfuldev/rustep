@@ -3,7 +3,7 @@ use std::fmt::Display;
 type Row = u8;
 type Column = u8;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Position(pub Row, pub Column);
 
 fn column(mut index: Column) -> String {
