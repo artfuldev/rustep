@@ -8,7 +8,8 @@ use std::{
 };
 
 use crate::core::Command;
-use players::{Player, Random};
+use players::{All, Player, Random};
+use rand::thread_rng;
 
 const URL: &str = "https://github.com/artfuldev/rustep";
 
@@ -16,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let player = &Random;
+    let player = &Random(Box::new(All), thread_rng());
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
@@ -38,7 +39,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     writeln!(stdout, "identify ok")?;
                     stdout.flush()?;
                 }
-                Command::Move(game, time) => match player.clone().best(game, time) {
+                Command::Move(mut game, time) => match player.clone().best(&mut game, time) {
                     Ok(position) => {
                         let mut stdout = io::stdout().lock();
                         writeln!(stdout, "best {}", position)?;
