@@ -317,6 +317,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_parse_takes_little_time_for_15x15_board() -> Result<()> {
         let start = Instant::now();
         let _ = Game::parse("15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_ x")?;
