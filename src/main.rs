@@ -8,7 +8,7 @@ use std::{
 };
 
 use crate::core::Command;
-use players::{All, Player, Random};
+use players::{Nearby, Player, Random};
 use rand::thread_rng;
 
 const URL: &str = "https://github.com/artfuldev/rustep";
@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let player = &Random(Box::new(All), thread_rng());
+    let player = &Random(Box::new(Nearby(2)), thread_rng());
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
