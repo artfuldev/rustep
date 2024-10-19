@@ -61,3 +61,39 @@ impl Looker for Nearby {
         moves
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use anyhow::Result;
+
+    #[test]
+    fn test_returns_extremes() -> Result<()> {
+        let (_, game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
+        let mut nearby = Nearby(2u8);
+        let moves = nearby.moves(&game);
+        assert!(moves.contains(&Position(0, 0)));
+        Ok(())
+    }
+
+    #[test]
+    fn test_returns_only_within_bounds() -> Result<()> {
+        let (_, game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
+        let mut nearby = Nearby(1u8);
+        let mut moves = nearby.moves(&game);
+        moves.sort();
+        let mut expected = vec![
+            Position(2, 3),
+            Position(2, 1),
+            Position(1, 2),
+            Position(3, 2),
+            Position(1, 1),
+            Position(1, 3),
+            Position(3, 1),
+            Position(3, 3),
+        ];
+        expected.sort();
+        assert_eq!(moves, expected);
+        Ok(())
+    }
+}
