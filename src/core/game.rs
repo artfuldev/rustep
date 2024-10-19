@@ -147,6 +147,27 @@ mod tests {
     use pretty_assertions::{assert_eq, assert_ne};
 
     #[test]
+    fn test_parsed_game_has_right_cells() -> Result<()> {
+        let (_, game) = Game::parse("3_/_x_/3_ o")?;
+        assert_eq!(game.cells[1][1], Cell::Played(Side::X));
+        Ok(())
+    }
+
+    #[test]
+    fn test_parsed_game_has_right_size() -> Result<()> {
+        let (_, game) = Game::parse("3_/_x_/3_ o")?;
+        assert_eq!(game.size, 3);
+        Ok(())
+    }
+
+    #[test]
+    fn test_parsed_game_has_right_side_to_play() -> Result<()> {
+        let (_, game) = Game::parse("3_/_x_/3_ o")?;
+        assert_eq!(game.side_to_play, Side::O);
+        Ok(())
+    }
+
+    #[test]
     fn test_play_removes_playable_position() -> Result<()> {
         let (_, mut game) = Game::parse("3_/3_/3_ x")?;
         let position = Position(1, 1);
