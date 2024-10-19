@@ -1,8 +1,7 @@
 use nom::{
-    branch::alt,
     bytes::complete::tag,
     character::complete::{multispace1, u8},
-    combinator::{opt, value},
+    combinator::opt,
     multi::{many1, separated_list1},
     sequence::{separated_pair, tuple},
     IResult,
@@ -20,10 +19,6 @@ pub struct Game {
     pub size: u8,
     pub win_length: u8,
     pub hash: u64,
-}
-
-fn parse_side_to_play(input: &str) -> IResult<&str, Side> {
-    alt((value(Side::X, tag("x")), value(Side::O, tag("o"))))(input)
 }
 
 fn parse_count(input: &str) -> IResult<&str, u8> {
@@ -77,7 +72,7 @@ pub fn parse_board(
 impl Game {
     pub fn parse(input: &str) -> IResult<&str, Game> {
         let (remaining, ((cells, played, playable, size, mut hash), side_to_play)) =
-            separated_pair(parse_board, multispace1, parse_side_to_play)(input)?;
+            separated_pair(parse_board, multispace1, Side::parse)(input)?;
         hash ^= zobrist(size).side(&side_to_play);
         return Ok((
             remaining,
