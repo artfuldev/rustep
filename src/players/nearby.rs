@@ -4,7 +4,6 @@ use crate::core::{Game, Position};
 
 use super::looker::Looker;
 
-#[derive(Clone)]
 pub struct Nearby(pub u8);
 impl Nearby {
     #[inline(always)]

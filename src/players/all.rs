@@ -2,7 +2,6 @@ use crate::core::{Game, Position};
 
 use super::looker::Looker;
 
-#[derive(Clone)]
 pub struct All;
 
 impl Looker for All {

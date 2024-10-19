@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let player = &Random(Box::new(Nearby(2)), thread_rng());
+    let mut player = Random(Box::new(Nearby(2)), thread_rng());
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
@@ -40,7 +40,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     writeln!(stdout, "identify ok")?;
                     stdout.flush()?;
                 }
-                Command::Move(mut game, time) => match player.clone().best(&mut game, time) {
+                Command::Move(mut game, time) => match player.best(&mut game, time) {
                     Ok(position) => {
                         let mut stdout = io::stdout().lock();
                         writeln!(stdout, "best {}", position)?;

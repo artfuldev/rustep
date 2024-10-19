@@ -5,7 +5,6 @@ use crate::core::{Game, Position, Time};
 
 use super::{looker::Looker, Player};
 
-#[derive(Clone)]
 pub struct Random(pub Box<dyn Looker>, pub ThreadRng);
 
 impl Player for Random {
