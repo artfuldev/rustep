@@ -68,11 +68,11 @@ mod tests {
     use anyhow::Result;
 
     #[test]
-    fn test_returns_extremes() -> Result<()> {
-        let (_, game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
+    fn test_returns_center_when_empty() -> Result<()> {
+        let (_, game) = Game::parse("5_/5_/5_/5_/5_ x")?;
         let mut nearby = Nearby(2u8);
         let moves = nearby.moves(&game);
-        assert!(moves.contains(&Position(0, 0)));
+        assert_eq!(moves, vec![Position(2, 2)]);
         Ok(())
     }
 
@@ -94,6 +94,15 @@ mod tests {
         ];
         expected.sort();
         assert_eq!(moves, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_returns_extremes() -> Result<()> {
+        let (_, game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
+        let mut nearby = Nearby(2u8);
+        let moves = nearby.moves(&game);
+        assert!(moves.contains(&Position(0, 0)));
         Ok(())
     }
 }
