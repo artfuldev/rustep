@@ -319,8 +319,8 @@ mod tests {
     #[test]
     fn test_parse_takes_little_time_for_15x15_board() -> Result<()> {
         let start = Instant::now();
-        let _ = Game::parse("3_/3_/3_ x")?;
-        assert!(start.elapsed() < Duration::from_micros(500));
+        let _ = Game::parse("15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_/15_ x")?;
+        assert!(start.elapsed() < Duration::from_micros(1500));
         Ok(())
     }
 }
