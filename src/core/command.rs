@@ -16,42 +16,42 @@ pub enum Command {
     Quit,
 }
 
-impl Command {
-    fn parse_win_length(input: &str) -> IResult<&str, u8> {
-        preceded(tuple((tag("win-length"), multispace1)), u8)(input)
-    }
+fn parse_win_length(input: &str) -> IResult<&str, u8> {
+    preceded(tuple((tag("win-length"), multispace1)), u8)(input)
+}
 
-    fn parse_move(input: &str) -> IResult<&str, Command> {
-        let (remaining, (mut game, time, win_length)) = preceded(
-            tuple((tag("move"), multispace1)),
-            tuple((
-                Game::parse,
-                opt(preceded(multispace1, Time::parse)),
-                opt(preceded(multispace1, Command::parse_win_length)),
-            )),
-        )(input)?;
-        match win_length {
-            Some(win_length) => {
-                game.set_win_length(win_length);
-            }
-            _ => {}
+fn parse_move(input: &str) -> IResult<&str, Command> {
+    let (remaining, (mut game, time, win_length)) = preceded(
+        tuple((tag("move"), multispace1)),
+        tuple((
+            Game::parse,
+            opt(preceded(multispace1, Time::parse)),
+            opt(preceded(multispace1, parse_win_length)),
+        )),
+    )(input)?;
+    match win_length {
+        Some(win_length) => {
+            game.set_win_length(win_length);
         }
-        Ok((remaining, Command::Move(game, time)))
+        _ => {}
     }
+    Ok((remaining, Command::Move(game, time)))
+}
 
-    fn parse_handshake(input: &str) -> IResult<&str, Command> {
-        let (remaining, version) = preceded(
-            tuple((tag("st3p"), multispace1, tag("version"), multispace1)),
-            verify(u8, |version: &u8| *version >= 1 && *version <= 2),
-        )(input)?;
-        Ok((remaining, Command::Handshake(version)))
-    }
+fn parse_handshake(input: &str) -> IResult<&str, Command> {
+    let (remaining, version) = preceded(
+        tuple((tag("st3p"), multispace1, tag("version"), multispace1)),
+        verify(u8, |version: &u8| *version >= 1 && *version <= 2),
+    )(input)?;
+    Ok((remaining, Command::Handshake(version)))
+}
 
+impl Command {
     pub fn parse(input: &str) -> IResult<&str, Command> {
         alt((
-            Command::parse_handshake,
+            parse_handshake,
             value(Command::Identify, tag("identify")),
-            Command::parse_move,
+            parse_move,
             value(Command::Quit, tag("quit")),
         ))(input)
     }
