@@ -4,13 +4,13 @@ use crate::core::{Game, Position};
 
 use super::looker::Looker;
 
-pub struct Nearby(pub u8);
+pub struct Nearby;
 impl Nearby {
     #[inline(always)]
-    fn nearby(&self, position: &Position, size: u8) -> Vec<Position> {
-        let mut nearby = Vec::with_capacity((self.0 as usize * 2 + 1).pow(2));
-        for i_offset in -(self.0 as isize)..=self.0 as isize {
-            for j_offset in -(self.0 as isize)..=self.0 as isize {
+    fn nearby(&self, position: &Position, distance: u8, size: u8) -> Vec<Position> {
+        let mut nearby = Vec::with_capacity((distance as usize * 2 + 1).pow(2));
+        for i_offset in -(distance as isize)..=distance as isize {
+            for j_offset in -(distance as isize)..=distance as isize {
                 let new_row = (position.0 as isize + i_offset) as isize;
                 let new_col = (position.1 as isize + j_offset) as isize;
                 if new_row >= 0
@@ -30,13 +30,14 @@ impl Nearby {
         &self,
         played: &Vec<Position>,
         playable: &FxHashSet<Position>,
+        distance: u8,
         size: u8,
     ) -> Vec<Position> {
         let mut seen: FxHashSet<Position> = FxHashSet::default();
-        let capacity = played.len() * (2 * self.0 as usize + 1).pow(2);
+        let capacity = played.len() * (2 * distance as usize + 1).pow(2);
         let mut moves: Vec<Position> = Vec::with_capacity(capacity);
         for position in played.iter() {
-            for neighbor in self.nearby(position, size) {
+            for neighbor in self.nearby(position, distance, size) {
                 if !playable.contains(&neighbor) || !seen.insert(neighbor.clone()) {
                     continue;
                 }
@@ -56,7 +57,12 @@ impl Looker for Nearby {
         } else {
             vec![]
         };
-        moves.append(&mut self.near_played(&game.moves, &game.playable, game.size));
+        moves.append(&mut self.near_played(
+            &game.moves,
+            &game.playable,
+            game.win_length / 2,
+            game.size,
+        ));
         moves
     }
 }
@@ -70,16 +76,17 @@ mod tests {
     #[test]
     fn test_returns_center_when_empty() -> Result<()> {
         let (_, game) = Game::parse("5_/5_/5_/5_/5_ x")?;
-        let mut nearby = Nearby(2u8);
+        let mut nearby = Nearby;
         let moves = nearby.moves(&game);
         assert_eq!(moves, vec![Position(2, 2)]);
         Ok(())
     }
 
     #[test]
-    fn test_returns_only_within_bounds() -> Result<()> {
-        let (_, game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
-        let mut nearby = Nearby(1u8);
+    fn test_returns_only_offset_of_win_length_by_2() -> Result<()> {
+        let (_, mut game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
+        game.set_win_length(3);
+        let mut nearby = Nearby;
         let mut moves = nearby.moves(&game);
         moves.sort();
         let mut expected = vec![
@@ -100,7 +107,7 @@ mod tests {
     #[test]
     fn test_returns_extremes() -> Result<()> {
         let (_, game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
-        let mut nearby = Nearby(2u8);
+        let mut nearby = Nearby;
         let moves = nearby.moves(&game);
         assert!(moves.contains(&Position(0, 0)));
         Ok(())

@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let mut player = Random(Box::new(Nearby(2)), thread_rng());
+    let mut player = Random(Box::new(Nearby), thread_rng());
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
