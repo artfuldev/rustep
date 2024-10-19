@@ -12,13 +12,14 @@ impl Nearby {
         let mut nearby = Vec::with_capacity((self.0 as usize * 2 + 1).pow(2));
         for i_offset in -(self.0 as isize)..=self.0 as isize {
             for j_offset in -(self.0 as isize)..=self.0 as isize {
-                if let (Some(new_row), Some(new_col)) = (
-                    position.0.checked_add(i_offset as u8),
-                    position.1.checked_add(j_offset as u8),
-                ) {
-                    if new_row < size && new_col < size {
-                        nearby.push(Position(new_row, new_col));
-                    }
+                let new_row = (position.0 as isize + i_offset) as isize;
+                let new_col = (position.1 as isize + j_offset) as isize;
+                if new_row >= 0
+                    && new_row < size as isize
+                    && new_col >= 0
+                    && new_col < size as isize
+                {
+                    nearby.push(Position(new_row as u8, new_col as u8));
                 }
             }
         }
