@@ -1,4 +1,9 @@
-use nom::{branch::alt, bytes::complete::tag, combinator::value, IResult};
+use nom::{
+    branch::alt,
+    bytes::complete::tag,
+    combinator::{map, value},
+    IResult,
+};
 
 use super::Side;
 
@@ -14,8 +19,7 @@ impl Cell {
         alt((
             value(Cell::Unplayable, tag(".")),
             value(Cell::Playable, tag("_")),
-            value(Cell::Played(Side::X), tag("x")),
-            value(Cell::Played(Side::O), tag("o")),
+            map(Side::parse, Cell::Played),
         ))(input)
     }
 }
