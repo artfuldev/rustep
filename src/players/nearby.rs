@@ -1,52 +1,47 @@
+use memoize::memoize;
 use rustc_hash::FxHashSet;
 
 use crate::core::{Game, Position};
 
 use super::looker::Looker;
 
-pub struct Nearby;
-impl Nearby {
-    #[inline(always)]
-    fn nearby(&self, position: &Position, distance: u8, size: u8) -> Vec<Position> {
-        let mut nearby = Vec::with_capacity((distance as usize * 2 + 1).pow(2));
-        for i_offset in -(distance as isize)..=distance as isize {
-            for j_offset in -(distance as isize)..=distance as isize {
-                let new_row = (position.0 as isize + i_offset) as isize;
-                let new_col = (position.1 as isize + j_offset) as isize;
-                if new_row >= 0
-                    && new_row < size as isize
-                    && new_col >= 0
-                    && new_col < size as isize
-                {
-                    nearby.push(Position(new_row as u8, new_col as u8));
-                }
+#[memoize]
+fn nearby(position: Position, distance: u8, size: u8) -> Vec<Position> {
+    let mut nearby = Vec::with_capacity((distance as usize * 2 + 1).pow(2));
+    for x in -(distance as isize)..=distance as isize {
+        for y in -(distance as isize)..=distance as isize {
+            let i = (position.0 as isize + x) as isize;
+            let j = (position.1 as isize + y) as isize;
+            if i >= 0 && i < size as isize && j >= 0 && j < size as isize {
+                nearby.push(Position(i as u8, j as u8));
             }
         }
-        nearby
     }
-
-    #[inline(always)]
-    fn near_played(
-        &self,
-        played: &Vec<Position>,
-        playable: &FxHashSet<Position>,
-        distance: u8,
-        size: u8,
-    ) -> Vec<Position> {
-        let mut seen: FxHashSet<Position> = FxHashSet::default();
-        let capacity = played.len() * (2 * distance as usize + 1).pow(2);
-        let mut moves: Vec<Position> = Vec::with_capacity(capacity);
-        for position in played.iter() {
-            for neighbor in self.nearby(position, distance, size) {
-                if !playable.contains(&neighbor) || !seen.insert(neighbor.clone()) {
-                    continue;
-                }
-                moves.push(neighbor.clone());
-            }
-        }
-        moves
-    }
+    nearby
 }
+
+#[inline(always)]
+fn near_played(
+    played: &Vec<Position>,
+    playable: &FxHashSet<Position>,
+    distance: u8,
+    size: u8,
+) -> Vec<Position> {
+    let mut seen: FxHashSet<Position> = FxHashSet::default();
+    let capacity = played.len() * (2 * distance as usize + 1).pow(2);
+    let mut moves: Vec<Position> = Vec::with_capacity(capacity);
+    for position in played.iter() {
+        for neighbor in nearby(position.clone(), distance, size) {
+            if !playable.contains(&neighbor) || !seen.insert(neighbor.clone()) {
+                continue;
+            }
+            moves.push(neighbor.clone());
+        }
+    }
+    moves
+}
+
+pub struct Nearby;
 
 impl Looker for Nearby {
     fn moves(&mut self, game: &Game) -> Vec<Position> {
@@ -57,7 +52,7 @@ impl Looker for Nearby {
         } else {
             vec![]
         };
-        moves.append(&mut self.near_played(
+        moves.append(&mut near_played(
             &game.moves,
             &game.playable,
             game.win_length / 2,
