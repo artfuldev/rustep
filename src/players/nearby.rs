@@ -53,7 +53,9 @@ impl Looker for Nearby {
         let center = Position(mid, mid);
         let mut moves = if game.playable.contains(&center) {
             vec![center]
-        } else { vec![] };
+        } else {
+            vec![]
+        };
         moves.append(&mut self.near_played(&game.moves, &game.playable, game.size));
         moves
     }

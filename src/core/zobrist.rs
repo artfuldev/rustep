@@ -18,7 +18,8 @@ impl Zobrist {
 
     pub fn new(size: u8, rng: &mut ThreadRng) -> Self {
         let mut used: FxHashSet<u64> = FxHashSet::default();
-        let mut moves: FxHashMap<(Position, Cell), u64> = FxHashMap::with_capacity_and_hasher((size as usize).pow(2) * 3, FxBuildHasher);
+        let mut moves: FxHashMap<(Position, Cell), u64> =
+            FxHashMap::with_capacity_and_hasher((size as usize).pow(2) * 3, FxBuildHasher);
         let mut sides: FxHashMap<Side, u64> = FxHashMap::with_capacity_and_hasher(2, FxBuildHasher);
         for side in [Side::X, Side::O] {
             let mut value = rng.next_u64();
