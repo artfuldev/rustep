@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -9,13 +7,14 @@ use nom::{
     sequence::{separated_pair, tuple},
     IResult,
 };
+use rustc_hash::FxHashSet;
 
 use super::{zobrist::zobrist, Cell, Position, Side};
 
 #[derive(Clone, Debug)]
 pub struct Game {
     pub cells: Vec<Vec<Cell>>,
-    pub playable: HashSet<Position>,
+    pub playable: FxHashSet<Position>,
     pub moves: Vec<Position>,
     pub side_to_play: Side,
     pub size: u8,
@@ -37,9 +36,9 @@ fn parse_count(input: &str) -> IResult<&str, u8> {
 
 pub fn parse_board(
     input: &str,
-) -> IResult<&str, (Vec<Vec<Cell>>, Vec<Position>, HashSet<Position>, u8, u64)> {
+) -> IResult<&str, (Vec<Vec<Cell>>, Vec<Position>, FxHashSet<Position>, u8, u64)> {
     let mut moves: Vec<Position> = Vec::new();
-    let mut playable: HashSet<Position> = HashSet::new();
+    let mut playable: FxHashSet<Position> = FxHashSet::default();
     let mut cells: Vec<Vec<Cell>> = Vec::new();
     let mut hash: u64 = 0;
     let (remaining, groups) =
