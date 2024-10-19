@@ -66,6 +66,7 @@ impl Looker for Nearby {
 mod tests {
     use super::*;
     use anyhow::Result;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_returns_center_when_empty() -> Result<()> {
