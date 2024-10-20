@@ -93,7 +93,7 @@ impl Game {
         self.win_length = win_length;
     }
 
-    pub fn play(&mut self, position: Position) {
+    pub fn play(&mut self, position: &Position) {
         if !self.playable.contains(&position) {
             return;
         }
@@ -107,7 +107,7 @@ impl Game {
         self.hash ^= zobrist.side(&other);
         self.hash ^= zobrist.mov(&(position.clone(), cell));
         self.playable.remove(&position);
-        self.moves.push(position);
+        self.moves.push(position.clone());
         self.side_to_play = other;
     }
 
@@ -164,7 +164,7 @@ mod tests {
     fn test_play_removes_playable_position() -> Result<()> {
         let (_, mut game) = Game::parse("3_/3_/3_ x")?;
         let position = Position(1, 1);
-        game.play(position.clone());
+        game.play(&position);
         assert!(!game.playable.contains(&position));
         Ok(())
     }
@@ -173,7 +173,7 @@ mod tests {
     fn test_play_changes_side_to_play() -> Result<()> {
         let (_, mut game) = Game::parse("3_/3_/3_ x")?;
         let clone = game.clone();
-        game.play(Position(1, 1));
+        game.play(&Position(1, 1));
         assert_ne!(game.side_to_play, clone.side_to_play);
         Ok(())
     }
@@ -181,7 +181,7 @@ mod tests {
     #[test]
     fn test_play_adds_x_if_x_to_play() -> Result<()> {
         let (_, mut game) = Game::parse("3_/3_/3_ x")?;
-        game.play(Position(1, 1));
+        game.play(&Position(1, 1));
         assert_eq!(game.cells[1][1], Cell::Played(Side::X));
         Ok(())
     }
@@ -189,7 +189,7 @@ mod tests {
     #[test]
     fn test_play_adds_o_if_o_to_play() -> Result<()> {
         let (_, mut game) = Game::parse("3_/3_/3_ o")?;
-        game.play(Position(1, 1));
+        game.play(&Position(1, 1));
         assert_eq!(game.cells[1][1], Cell::Played(Side::O));
         Ok(())
     }
@@ -198,7 +198,7 @@ mod tests {
     fn test_play_adds_move() -> Result<()> {
         let (_, mut game) = Game::parse("3_/3_/3_ x")?;
         let position = Position(1, 1);
-        game.play(position.clone());
+        game.play(&position);
         assert!(game.moves.contains(&position));
         Ok(())
     }
@@ -207,7 +207,7 @@ mod tests {
     fn test_play_does_not_overwrite_moves() -> Result<()> {
         let (_, mut game) = Game::parse("3_/xox/3_ x")?;
         let position = Position(1, 1);
-        game.play(position.clone());
+        game.play(&position);
         assert_eq!(game.cells[1][1], Cell::Played(Side::O));
         Ok(())
     }
@@ -216,7 +216,7 @@ mod tests {
     fn test_play_does_not_accept_unplayable_cells() -> Result<()> {
         let (_, mut game) = Game::parse("3./xox/3_ x")?;
         let position = Position(0, 1);
-        game.play(position.clone());
+        game.play(&position);
         assert_eq!(game.cells[0][1], Cell::Unplayable);
         Ok(())
     }
@@ -226,7 +226,7 @@ mod tests {
         let (_, mut game) = Game::parse("3_/3_/3_ x")?;
         let clone = game.clone();
         let position = Position(1, 1);
-        game.play(position.clone());
+        game.play(&position);
         assert_ne!(clone.hash, game.hash);
         Ok(())
     }
@@ -235,9 +235,9 @@ mod tests {
     fn test_hash_is_equal_whether_parsed_or_played() -> Result<()> {
         let (_, parsed) = Game::parse("3_/xox/3_ o")?;
         let (_, mut played) = Game::parse("3_/3_/3_ x")?;
-        played.play(Position(1, 0));
-        played.play(Position(1, 1));
-        played.play(Position(1, 2));
+        played.play(&Position(1, 0));
+        played.play(&Position(1, 1));
+        played.play(&Position(1, 2));
         assert_eq!(parsed.hash, played.hash);
         Ok(())
     }
@@ -246,9 +246,9 @@ mod tests {
     fn test_hash_is_equal_even_if_move_order_changes() -> Result<()> {
         let (_, parsed) = Game::parse("3_/xox/3_ o")?;
         let (_, mut played) = Game::parse("3_/3_/3_ x")?;
-        played.play(Position(1, 2));
-        played.play(Position(1, 1));
-        played.play(Position(1, 0));
+        played.play(&Position(1, 2));
+        played.play(&Position(1, 1));
+        played.play(&Position(1, 0));
         assert_eq!(parsed.hash, played.hash);
         Ok(())
     }
@@ -257,9 +257,9 @@ mod tests {
     fn test_hash_is_unequal_if_side_to_play_changes() -> Result<()> {
         let (_, parsed) = Game::parse("3_/xox/3_ x")?;
         let (_, mut played) = Game::parse("3_/3_/3_ x")?;
-        played.play(Position(1, 2));
-        played.play(Position(1, 1));
-        played.play(Position(1, 0));
+        played.play(&Position(1, 2));
+        played.play(&Position(1, 1));
+        played.play(&Position(1, 0));
         assert_ne!(parsed.hash, played.hash);
         Ok(())
     }
@@ -285,7 +285,7 @@ mod tests {
     fn test_undo_removes_last_played_move() -> Result<()> {
         let (_, mut game) = Game::parse("3_/x2_/3_ x")?;
         let position = Position(1, 1);
-        game.play(position.clone());
+        game.play(&position);
         game.undo();
         assert!(!game.moves.contains(&position));
         Ok(())
@@ -303,7 +303,7 @@ mod tests {
     fn test_undo_reverts_hash() -> Result<()> {
         let (_, mut game) = Game::parse("3_/3_/3_ x")?;
         let clone = game.clone();
-        game.play(Position(1, 1));
+        game.play(&Position(1, 1));
         game.undo();
         assert_eq!(game.hash, clone.hash);
         Ok(())
