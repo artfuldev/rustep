@@ -9,17 +9,17 @@ use super::Side;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Cell {
-    Unplayable,
     Playable,
     Played(Side),
+    Unplayable,
 }
 
 impl Cell {
     pub fn parse(input: &str) -> IResult<&str, Cell> {
         alt((
-            value(Cell::Unplayable, tag(".")),
             value(Cell::Playable, tag("_")),
             map(Side::parse, Cell::Played),
+            value(Cell::Unplayable, tag(".")),
         ))(input)
     }
 }

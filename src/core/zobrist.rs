@@ -30,7 +30,11 @@ impl Zobrist {
         }
         for row in 0..size {
             for column in 0..size {
-                for cell in [Cell::Playable, Cell::Played(Side::X), Cell::Played(Side::O)] {
+                for cell in [
+                    Cell::Played(Side::X),
+                    Cell::Played(Side::O),
+                    Cell::Unplayable,
+                ] {
                     let key = (Position(row, column), cell.clone());
                     let mut value = rng.next_u64();
                     while used.contains(&value) {

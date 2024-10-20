@@ -42,24 +42,25 @@ pub fn parse_board(
     let size = usize as u8;
     let zobrist = zobrist(size);
     let mut row = 0u8;
-    for group in groups {
+    for group in &groups {
         let mut vec: Vec<Cell> = Vec::with_capacity(usize);
         let mut column = 0u8;
         for (count, cell) in group {
-            for _ in 0..count {
+            for _ in 0..*count {
                 let position = Position(row as u8, column as u8);
-                vec.push(cell.clone());
-                match &cell {
+                match cell {
+                    Cell::Playable => {
+                        playable.insert(position);
+                    }
                     Cell::Played(_) => {
                         hash ^= zobrist.mov(&(position.clone(), cell.clone()));
                         moves.push(position);
                     }
-                    Cell::Playable => {
-                        hash ^= zobrist.mov(&(position.clone(), cell.clone()));
-                        playable.insert(position);
+                    Cell::Unplayable => {
+                        hash ^= zobrist.mov(&(position.clone(), Cell::Unplayable));
                     }
-                    _ => {}
                 };
+                vec.push(cell.clone());
                 column += 1;
             }
         }
@@ -104,7 +105,6 @@ impl Game {
         self.cells[x as usize][y as usize] = cell.clone();
         self.hash ^= zobrist.side(&side);
         self.hash ^= zobrist.side(&other);
-        self.hash ^= zobrist.mov(&(position.clone(), Cell::Playable));
         self.hash ^= zobrist.mov(&(position.clone(), cell));
         self.playable.remove(&position);
         self.moves.push(position);
@@ -123,7 +123,6 @@ impl Game {
                 self.cells[x as usize][y as usize] = Cell::Playable;
                 self.hash ^= zobrist.side(&side);
                 self.hash ^= zobrist.side(&other);
-                self.hash ^= zobrist.mov(&(position.clone(), Cell::Playable));
                 self.hash ^= zobrist.mov(&(position.clone(), cell));
                 self.playable.insert(position);
                 self.side_to_play = other;
