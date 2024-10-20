@@ -1,6 +1,6 @@
 use crate::{
     core::{Game, Position, Side, Time},
-    evaluation::Heuristic,
+    heuristics::Heuristic,
     lookers::Looker,
 };
 use anyhow::{bail, Result};

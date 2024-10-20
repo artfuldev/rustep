@@ -1,5 +1,5 @@
 pub mod core;
-pub mod evaluation;
+pub mod heuristics;
 pub mod lookers;
 pub mod players;
 
