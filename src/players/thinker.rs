@@ -1,10 +1,11 @@
 use crate::{
     core::{Game, Position, Side, Time},
     evaluation::Heuristic,
+    lookers::Looker,
 };
 use anyhow::{bail, Result};
 
-use super::{looker::Looker, Player};
+use super::Player;
 
 fn terminal(_: &mut Game) -> bool {
     false

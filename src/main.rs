@@ -1,5 +1,6 @@
 pub mod core;
 pub mod evaluation;
+pub mod lookers;
 pub mod players;
 
 use std::{
@@ -9,7 +10,8 @@ use std::{
 };
 
 use crate::core::Command;
-use players::{Nearby, Player, Random};
+use lookers::Nearby;
+use players::{Player, Random};
 use rand::thread_rng;
 
 const URL: &str = "https://github.com/artfuldev/rustep";

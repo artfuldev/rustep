@@ -1,9 +1,12 @@
 use anyhow::{bail, Result};
 use rand::{rngs::ThreadRng, Rng};
 
-use crate::core::{Game, Position, Time};
+use crate::{
+    core::{Game, Position, Time},
+    lookers::Looker,
+};
 
-use super::{looker::Looker, Player};
+use super::Player;
 
 pub struct Random(pub Box<dyn Looker>, pub ThreadRng);
 
