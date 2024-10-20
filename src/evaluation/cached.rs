@@ -15,7 +15,7 @@ impl Heuristic for Cached {
     fn score(&mut self, game: &Game) -> i64 {
         match self.1.get(&game.hash) {
             Some(&score) => {
-                return score;
+                score
             }
             None => {
                 let score = self.0.score(game);
