@@ -3,7 +3,12 @@ use crate::core::Position;
 
 pub fn wins(position: &Position, size: u8, win_length: u8) -> Vec<Vec<Position>> {
     let mut wins = Vec::new();
-    for direction in vec![Direction::Horizontal, Direction::Vertical, Direction::Diagonal, Direction::AntiDiagonal] {
+    for direction in vec![
+        Direction::Horizontal,
+        Direction::Vertical,
+        Direction::Diagonal,
+        Direction::AntiDiagonal,
+    ] {
         for line in lines(&position, &direction, size, win_length) {
             wins.push(line);
         }

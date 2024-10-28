@@ -1,4 +1,7 @@
-use super::{direction::Direction, line::{line, Line}};
+use super::{
+    direction::Direction,
+    line::{line, Line},
+};
 use crate::core::Position;
 
 #[inline(always)]
@@ -11,12 +14,19 @@ pub fn lines(position: &Position, direction: &Direction, size: u8, win_length: u
     let mut column = position.1 as i16;
     let _size = size as i16;
     for _ in 0..win_length {
-        if let Some(line) = line(&Position(row as u8, column as u8), direction, win_length, size) {
+        if let Some(line) = line(
+            &Position(row as u8, column as u8),
+            direction,
+            win_length,
+            size,
+        ) {
             lines.push(line);
         }
         row -= delta_row;
         column -= delta_column;
-        if row < 0 || row >= _size || column < 0 || column >= _size { break; }
+        if row < 0 || row >= _size || column < 0 || column >= _size {
+            break;
+        }
     }
     lines
 }
@@ -29,30 +39,24 @@ mod tests {
 
     #[test]
     fn test_lines_should_list_all_horizontal_lines_given_corner() -> Result<()> {
-        let lines = lines(&Position(2, 2), &Direction::Horizontal,  3, 3);
-        let expected = vec![
-            vec![Position(2, 2), Position(2, 1), Position(2, 0)],
-        ];
+        let lines = lines(&Position(2, 2), &Direction::Horizontal, 3, 3);
+        let expected = vec![vec![Position(2, 2), Position(2, 1), Position(2, 0)]];
         assert_eq!(lines, expected);
         Ok(())
     }
 
     #[test]
     fn test_lines_should_list_all_vertical_lines_given_corner() -> Result<()> {
-        let lines = lines(&Position(2, 2), &Direction::Vertical,  3, 3);
-        let expected = vec![
-            vec![Position(2, 2), Position(1, 2), Position(0, 2)],
-        ];
+        let lines = lines(&Position(2, 2), &Direction::Vertical, 3, 3);
+        let expected = vec![vec![Position(2, 2), Position(1, 2), Position(0, 2)]];
         assert_eq!(lines, expected);
         Ok(())
     }
 
     #[test]
     fn test_lines_should_list_all_diagonal_lines_given_corner() -> Result<()> {
-        let lines = lines(&Position(2, 2), &Direction::Diagonal,  3, 3);
-        let expected = vec![
-            vec![Position(2, 2), Position(1, 1), Position(0, 0)],
-        ];
+        let lines = lines(&Position(2, 2), &Direction::Diagonal, 3, 3);
+        let expected = vec![vec![Position(2, 2), Position(1, 1), Position(0, 0)]];
         assert_eq!(lines, expected);
         Ok(())
     }
@@ -120,9 +124,7 @@ mod tests {
     #[test]
     fn test_lines_should_list_all_horizontal_lines_given_anti_corner() -> Result<()> {
         let lines = lines(&Position(2, 0), &Direction::Horizontal, 3, 3);
-        let expected = vec![
-            vec![Position(2, 2), Position(2, 1), Position(2, 0)],
-        ];
+        let expected = vec![vec![Position(2, 2), Position(2, 1), Position(2, 0)]];
         assert_eq!(lines, expected);
         Ok(())
     }
