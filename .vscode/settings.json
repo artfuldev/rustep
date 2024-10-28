@@ -3,6 +3,7 @@
         "biguint",
         "hasher",
         "multispace",
+        "nohash",
         "rngs",
         "rustc",
         "zobrist"

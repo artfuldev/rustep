@@ -1,13 +1,13 @@
-use rustc_hash::FxHashMap;
+use nohash_hasher::IntMap;
 
 use crate::core::Game;
 
 use super::Heuristic;
 
-pub struct Cached(Box<dyn Heuristic>, FxHashMap<u64, i64>);
+pub struct Cached(Box<dyn Heuristic>, IntMap<u64, i64>);
 impl Cached {
     pub fn new(heuristic: Box<dyn Heuristic>) -> Self {
-        Self(heuristic, FxHashMap::default())
+        Self(heuristic, IntMap::default())
     }
 }
 
