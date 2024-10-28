@@ -12,7 +12,7 @@ impl Direction {
             Self::Horizontal => (0, -1),
             Self::Vertical => (-1, 0),
             Self::Diagonal => (-1, -1),
-            Self::AntiDiagonal => (1, -1),
+            Self::AntiDiagonal => (-1, 1),
         }
     }
 }
