@@ -70,7 +70,7 @@ impl Player for Thinker {
         let (pv, _) = self.pvs(
             game,
             game.moves.len(),
-            2 * game.win_length,
+            2,
             i64::MIN,
             i64::MAX,
             game.side_to_play == Side::X,
