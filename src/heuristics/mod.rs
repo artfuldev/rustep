@@ -5,8 +5,10 @@ pub mod heuristic;
 pub mod line;
 pub mod lines;
 pub mod termination;
+pub mod win;
 pub mod wins;
 
 pub use cached::*;
 pub use cumulative::*;
 pub use heuristic::*;
+pub use win::*;
