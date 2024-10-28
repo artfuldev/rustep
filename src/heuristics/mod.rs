@@ -6,6 +6,4 @@ pub mod line;
 
 pub use cached::*;
 pub use cumulative::*;
-pub use direction::*;
 pub use heuristic::*;
-pub use line::*;
