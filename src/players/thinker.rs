@@ -31,9 +31,10 @@ impl Thinker {
             let mut value = i64::MIN;
             for position in self.1.moves(&game) {
                 game.play(&position);
-                let (pv, score) = self.pvs(game, visited + 1, depth - 1, alpha, beta, false);
+                let (mut pv, score) = self.pvs(game, visited + 1, depth - 1, alpha, beta, false);
                 game.undo();
                 if score > value {
+                    pv.insert(0, position.clone());
                     best = pv;
                     value = score;
                 }
@@ -48,9 +49,10 @@ impl Thinker {
         let mut value = i64::MAX;
         for position in self.1.moves(&game) {
             game.play(&position);
-            let (pv, score) = self.pvs(game, visited + 1, depth - 1, alpha, beta, true);
+            let (mut pv, score) = self.pvs(game, visited + 1, depth - 1, alpha, beta, true);
             game.undo();
             if score < value {
+                pv.insert(0, position.clone());
                 best = pv;
                 value = score;
             }
