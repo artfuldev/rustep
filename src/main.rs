@@ -10,9 +10,9 @@ use std::{
 };
 
 use crate::core::Command;
+use heuristics::{Cached, Win};
 use lookers::Nearby;
-use players::{Player, Random};
-use rand::thread_rng;
+use players::{Player, Thinker};
 
 const URL: &str = "https://github.com/artfuldev/rustep";
 
@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let mut player = Random(Box::new(Nearby), thread_rng());
+    let mut player = Thinker(Box::new(Cached::new(Box::new(Win))), Box::new(Nearby));
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
