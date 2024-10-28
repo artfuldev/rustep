@@ -129,6 +129,18 @@ impl Game {
             }
         }
     }
+
+    pub fn get(&self, Position(x, y): &Position) -> Option<Cell> {
+        let i = self.cells.len();
+        if *x > (i as u8) {
+            return None;
+        }
+        let j = self.cells[0].len();
+        if *y > (j as u8) {
+            return None;
+        }
+        Some(self.cells[*x as usize][*y as usize].clone())
+    }
 }
 
 #[cfg(test)]
