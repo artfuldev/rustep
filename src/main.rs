@@ -10,7 +10,7 @@ use std::{
 };
 
 use crate::core::Command;
-use heuristics::{Cached, Win};
+use heuristics::{Cached, Null, Win};
 use lookers::Nearby;
 use players::{Player, Thinker};
 
@@ -20,7 +20,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let name = env!("CARGO_PKG_NAME");
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
-    let mut player = Thinker(Box::new(Cached::new(Box::new(Win))), Box::new(Nearby));
+    let mut player = Thinker::new(
+        Box::new(Cached::new(Box::new(Win::new(Box::new(Null))))),
+        Box::new(Nearby),
+    );
     loop {
         let mut buffer = String::new();
         let mut stdin = io::stdin().lock();
