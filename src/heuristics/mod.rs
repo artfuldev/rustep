@@ -1,14 +1,14 @@
+mod antis;
 pub mod cached;
+mod columns;
 pub mod cumulative;
+mod diagonals;
 mod direction;
 pub mod heuristic;
 mod line;
 mod lines;
 pub mod null;
 mod rows;
-mod columns;
-mod antis;
-mod diagonals;
 pub mod termination;
 pub mod win;
 pub mod wins;
