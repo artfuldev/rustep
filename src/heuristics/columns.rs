@@ -26,7 +26,7 @@ mod tests {
         let expected = vec![
             vec![Position(0, 0), Position(1, 0), Position(2, 0)],
             vec![Position(0, 1), Position(1, 1), Position(2, 1)],
-            vec![Position(0, 2), Position(1, 2), Position(2, 2)]
+            vec![Position(0, 2), Position(1, 2), Position(2, 2)],
         ];
         assert_eq!(actual, expected);
     }
