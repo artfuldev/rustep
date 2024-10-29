@@ -11,8 +11,13 @@ fn terminal(_: &mut Game) -> bool {
     false
 }
 
-pub struct Thinker(pub Box<dyn Heuristic>, pub Box<dyn Looker>);
+pub struct Thinker(Box<dyn Heuristic>, Box<dyn Looker>);
+
 impl Thinker {
+    pub fn new(heuristic: Box<dyn Heuristic>, looker: Box<dyn Looker>) -> Self {
+        Self(heuristic, looker)
+    }
+
     pub fn pvs(
         &mut self,
         game: &mut Game,
