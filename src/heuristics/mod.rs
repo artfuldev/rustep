@@ -1,6 +1,7 @@
 mod antis;
 pub mod cached;
 mod columns;
+pub mod consecutive;
 pub mod cumulative;
 mod diagonals;
 mod direction;
@@ -17,4 +18,5 @@ pub use cached::*;
 pub use cumulative::*;
 pub use heuristic::*;
 pub use null::*;
+pub use consecutive::*;
 pub use win::*;
