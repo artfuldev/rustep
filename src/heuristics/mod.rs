@@ -1,9 +1,9 @@
 pub mod cached;
 pub mod cumulative;
-pub mod direction;
+mod direction;
 pub mod heuristic;
-pub mod line;
-pub mod lines;
+mod line;
+mod lines;
 pub mod null;
 mod rows;
 mod columns;
