@@ -1,9 +1,9 @@
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 
 type Row = u8;
 type Column = u8;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Position(pub Row, pub Column);
 
 fn column(mut index: Column) -> String {
@@ -18,6 +18,12 @@ fn column(mut index: Column) -> String {
         index -= 1;
     }
     result
+}
+
+impl Debug for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}{}", column(self.1), self.0 + 1)
+    }
 }
 
 impl Display for Position {
