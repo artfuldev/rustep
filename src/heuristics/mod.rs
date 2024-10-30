@@ -15,8 +15,8 @@ pub mod win;
 pub mod wins;
 
 pub use cached::*;
+pub use consecutive::*;
 pub use cumulative::*;
 pub use heuristic::*;
 pub use null::*;
-pub use consecutive::*;
 pub use win::*;
