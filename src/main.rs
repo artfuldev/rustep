@@ -4,14 +4,13 @@ pub mod heuristics;
 pub mod lookers;
 pub mod players;
 
-use core::zobrist;
 use std::{
     error::Error,
     io::{self, BufRead, Write},
     process,
 };
 
-use crate::core::Command;
+use crate::core::{zobrist, Command};
 use hashers::Transposer;
 use heuristics::{Cached, Chance, Win};
 use lookers::{Nearby, Shuffler};
