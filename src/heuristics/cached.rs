@@ -1,13 +1,13 @@
 use nohash_hasher::IntMap;
 
-use crate::core::Game;
+use crate::{core::Game, hashers::Hasher};
 
 use super::Heuristic;
 
-pub struct Cached(Box<dyn Heuristic>, IntMap<u64, i64>);
+pub struct Cached(Box<dyn Heuristic>, IntMap<u64, i64>, Box<dyn Hasher>);
 impl Cached {
-    pub fn new(heuristic: Box<dyn Heuristic>) -> Self {
-        Self(heuristic, IntMap::default())
+    pub fn new(heuristic: Box<dyn Heuristic>, hasher: Box<dyn Hasher>) -> Self {
+        Self(heuristic, IntMap::default(), hasher)
     }
 }
 
@@ -17,7 +17,9 @@ impl Heuristic for Cached {
             Some(&score) => score,
             None => {
                 let score = self.0.score(game);
-                self.1.insert(game.hash, score);
+                for key in self.2.hashes(game) {
+                    self.1.insert(key, score);
+                }
                 score
             }
         }
