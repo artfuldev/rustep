@@ -1,6 +1,6 @@
 use crate::{
     core::{Game, Position, Side, Time},
-    heuristics::{termination::Termination, Heuristic},
+    heuristics::{termination::Termination, Assurance, Heuristic},
     lookers::Looker,
 };
 use anyhow::{bail, Result};
@@ -9,7 +9,7 @@ use super::Player;
 
 #[inline(always)]
 fn is_terminal(game: &Game) -> bool {
-    Termination::of(game).is_some()
+    Termination::of(game).is_some() || Assurance::of(game).is_some()
 }
 
 pub struct Thinker(Box<dyn Heuristic>, Box<dyn Looker>, u8);
