@@ -1,6 +1,7 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use memoize::memoize;
+use nohash_hasher::IntMap;
 
 use crate::core::{Cell, Game, Position, Side};
 
@@ -52,8 +53,8 @@ pub struct Chance;
 
 impl Heuristic for Chance {
     fn score(&mut self, game: &Game) -> i64 {
-        let mut x_win_lengths = HashMap::new();
-        let mut o_win_lengths = HashMap::new();
+        let mut x_win_lengths = IntMap::default();
+        let mut o_win_lengths = IntMap::default();
         for i in 0..game.win_length {
             x_win_lengths.insert(i, 0u8);
             o_win_lengths.insert(i, 0u8);
