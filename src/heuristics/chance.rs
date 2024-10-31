@@ -80,13 +80,32 @@ impl Heuristic for Chance {
             }
         }
         let imminent = game.win_length - 1u8;
-        if game.side_to_play == Side::X && (*x_win_lengths.get(&imminent).expect("warmed up") > 0u8)
-        {
+        let x_imminent_win_chances = *x_win_lengths.get(&imminent).expect("warmed up");
+        let o_imminent_win_chances = *o_win_lengths.get(&imminent).expect("warmed up");
+        if game.side_to_play == Side::X && (x_imminent_win_chances > 0u8) {
             return i64::MAX - (game.moves.len() as i64) - 1;
         }
-        if game.side_to_play == Side::O && (*o_win_lengths.get(&imminent).expect("warmed up") > 0u8)
-        {
+        if game.side_to_play == Side::O && (o_imminent_win_chances > 0u8) {
             return i64::MIN + (game.moves.len() as i64) + 1;
+        }
+        match (
+            x_imminent_win_chances > 1u8,
+            o_imminent_win_chances > 1u8,
+            game.side_to_play.clone(),
+        ) {
+            (true, true, Side::X) => {
+                return i64::MAX - (game.moves.len() as i64) - 3;
+            }
+            (true, true, Side::O) => {
+                return i64::MIN + (game.moves.len() as i64) + 3;
+            }
+            (true, false, Side::O) => {
+                return i64::MAX - (game.moves.len() as i64) - 2;
+            }
+            (false, true, Side::X) => {
+                return i64::MIN + (game.moves.len() as i64) + 2;
+            }
+            _ => {}
         }
         let mut score = 0;
         for i in imminent..0 {
