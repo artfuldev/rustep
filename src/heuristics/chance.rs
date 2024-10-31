@@ -93,12 +93,6 @@ impl Heuristic for Chance {
             o_imminent_win_chances > 1u8,
             game.side_to_play.clone(),
         ) {
-            (true, true, Side::X) => {
-                return i64::MAX - (game.moves.len() as i64) - 3;
-            }
-            (true, true, Side::O) => {
-                return i64::MIN + (game.moves.len() as i64) + 3;
-            }
             (true, false, Side::O) => {
                 return i64::MAX - (game.moves.len() as i64) - 2;
             }
