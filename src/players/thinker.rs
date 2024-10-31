@@ -1,14 +1,15 @@
 use crate::{
     core::{Game, Position, Side, Time},
-    heuristics::Heuristic,
+    heuristics::{termination::Termination, Heuristic},
     lookers::Looker,
 };
 use anyhow::{bail, Result};
 
 use super::Player;
 
-fn terminal(_: &mut Game) -> bool {
-    false
+#[inline(always)]
+fn is_terminal(game: &Game) -> bool {
+    Termination::of(game).is_some()
 }
 
 pub struct Thinker(Box<dyn Heuristic>, Box<dyn Looker>, u8);
@@ -32,7 +33,7 @@ impl Thinker {
         maximizing: bool,
     ) -> (Vec<Position>, i64) {
         let mut best = game.moves[visited..].to_vec();
-        if depth == 0 || terminal(game) {
+        if depth == 0 || is_terminal(game) {
             return (best, self.0.score(&game));
         }
 
@@ -41,6 +42,9 @@ impl Thinker {
             for position in self.1.moves(&game) {
                 game.play(&position);
                 let (mut pv, score) = self.pvs(game, visited + 1, depth - 1, alpha, beta, false);
+                if score > 0 {
+                    println!("{}: {}", position, score);
+                }
                 game.undo();
                 if score > value {
                     pv.insert(0, position.clone());
@@ -59,6 +63,9 @@ impl Thinker {
         for position in self.1.moves(&game) {
             game.play(&position);
             let (mut pv, score) = self.pvs(game, visited + 1, depth - 1, alpha, beta, true);
+            if score > 0 {
+                println!("{}: {}", position, score);
+            }
             game.undo();
             if score < value {
                 pv.insert(0, position.clone());
@@ -95,27 +102,28 @@ impl Player for Thinker {
 #[cfg(test)]
 mod tests {
     use crate::{
-        heuristics::{Chance, Win},
-        lookers::Nearby,
+        heuristics::{Assurer, Chance, Win},
+        lookers::{Nearby, Shuffler},
     };
 
     use super::*;
     use anyhow::Result;
-    use pretty_assertions::assert_eq;
+    use rand::thread_rng;
 
     #[test]
     fn test_thinker_returns_move() -> Result<()> {
         let (_, mut game) = Game::parse(
-            "15_/14_o/15_/_o13_/15_/3_o3_x7_/15_/5_x_x7_/7_x7_/7_x7_/15_/8_x6_/15_/o6_2o6_/15_ x",
+            "_x8_o4_/_o2x3_o7_/_x_x2_xo_x5_/4_o3_2o5_/_oxo2x_o3_o3_/_2x2o_2x7_/_x2_o2_2x2o_xo_/2_o2_o_2x3_2o_/2_x2_ox3o2x3_/5_xox_x2_x2_/2_2x_o_o_x2_o2_/4_ox2_ox_ox2_/5_x_x3_o3_/5_xo_x3_2o_/6_o_x2_o_o_ x",
         )?;
         game.set_win_length(5);
         let mut thinker = Thinker::with_depth(
-            Box::new(Win::new(Box::new(Chance))),
-            Box::new(Nearby::new(2)),
-            1,
+            Box::new(Win::new(Box::new(Assurer::new(Box::new(Chance))))),
+            Box::new(Shuffler::new(Box::new(Nearby::new(2)), thread_rng())),
+            2,
         );
         let position = thinker.best(&mut game, None)?;
-        assert_eq!(position, Position(6, 7));
+        let expected = vec![Position(5, 9), Position(10, 4)];
+        assert!(expected.contains(&position));
         Ok(())
     }
 }
