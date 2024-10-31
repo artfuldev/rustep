@@ -11,7 +11,7 @@ use std::{
 };
 
 use crate::core::Command;
-use hashers::Id;
+use hashers::Transposer;
 use heuristics::{Cached, Chance, Win};
 use lookers::{Nearby, Shuffler};
 use players::{Player, Thinker};
@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut player = Thinker::new(
         Box::new(Cached::new(
             Box::new(Win::new(Box::new(Chance))),
-            Box::new(Id),
+            Box::new(Transposer),
         )),
         Box::new(Shuffler::new(Box::new(Nearby::new(2)), thread_rng())),
     );
