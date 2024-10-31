@@ -1,4 +1,6 @@
 mod antis;
+mod assurance;
+pub mod assurer;
 pub mod cached;
 pub mod chance;
 mod columns;
@@ -15,6 +17,7 @@ pub mod termination;
 pub mod win;
 pub mod wins;
 
+pub use assurer::*;
 pub use cached::*;
 pub use chance::*;
 pub use consecutive::*;
