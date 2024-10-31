@@ -1,5 +1,5 @@
 mod antis;
-mod assurance;
+pub mod assurance;
 pub mod assurer;
 pub mod cached;
 pub mod chance;
@@ -17,6 +17,7 @@ pub mod termination;
 pub mod win;
 pub mod wins;
 
+pub use assurance::*;
 pub use assurer::*;
 pub use cached::*;
 pub use chance::*;
