@@ -12,16 +12,10 @@ impl Win {
 
 impl Heuristic for Win {
     fn score(&mut self, game: &Game) -> i64 {
-        let cost = game.moves.len() as i64;
         match Termination::of(game) {
             Some(Termination::Drawn) => 0,
-            Some(Termination::Won(side)) => {
-                if side == Side::X {
-                    i64::MAX - cost
-                } else {
-                    i64::MIN + cost
-                }
-            }
+            Some(Termination::Won(Side::X)) => i64::MAX - (game.moves.len() as i64),
+            Some(Termination::Won(Side::O)) => i64::MIN + (game.moves.len() as i64),
             None => self.0.score(game),
         }
     }
