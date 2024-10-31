@@ -4,6 +4,7 @@ pub mod heuristics;
 pub mod lookers;
 pub mod players;
 
+use core::zobrist;
 use std::{
     error::Error,
     io::{self, BufRead, Write},
@@ -38,6 +39,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         match Command::parse(input) {
             Ok((_, command)) => match command {
                 Command::Handshake(version) => {
+                    let _ = zobrist(15);
                     let mut stdout = io::stdout().lock();
                     writeln!(stdout, "st3p version {} ok", version)?;
                     stdout.flush()?;
