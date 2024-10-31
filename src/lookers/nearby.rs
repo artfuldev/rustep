@@ -41,7 +41,13 @@ fn near_played(
     moves
 }
 
-pub struct Nearby;
+pub struct Nearby(u8);
+
+impl Nearby {
+    pub fn new(distance: u8) -> Self {
+        Self(distance)
+    }
+}
 
 impl Looker for Nearby {
     fn moves(&mut self, game: &Game) -> Vec<Position> {
@@ -55,7 +61,7 @@ impl Looker for Nearby {
         moves.append(&mut near_played(
             &game.moves,
             &game.playable,
-            game.win_length / 2,
+            self.0,
             game.size,
         ));
         moves
@@ -71,17 +77,16 @@ mod tests {
     #[test]
     fn test_returns_center_when_empty() -> Result<()> {
         let (_, game) = Game::parse("5_/5_/5_/5_/5_ x")?;
-        let mut nearby = Nearby;
+        let mut nearby = Nearby::new(2);
         let moves = nearby.moves(&game);
         assert_eq!(moves, vec![Position(2, 2)]);
         Ok(())
     }
 
     #[test]
-    fn test_returns_only_offset_of_win_length_by_2() -> Result<()> {
-        let (_, mut game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
-        game.set_win_length(3);
-        let mut nearby = Nearby;
+    fn test_returns_only_distance_set() -> Result<()> {
+        let (_, game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
+        let mut nearby = Nearby::new(1);
         let mut moves = nearby.moves(&game);
         moves.sort();
         let mut expected = vec![
@@ -102,7 +107,7 @@ mod tests {
     #[test]
     fn test_returns_extremes() -> Result<()> {
         let (_, game) = Game::parse("5_/5_/2_x2_/5_/5_ x")?;
-        let mut nearby = Nearby;
+        let mut nearby = Nearby::new(2);
         let moves = nearby.moves(&game);
         assert!(moves.contains(&Position(0, 0)));
         Ok(())

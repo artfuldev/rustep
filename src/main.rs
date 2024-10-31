@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let author = env!("CARGO_PKG_AUTHORS");
     let mut player = Thinker::new(
         Box::new(Cached::new(Box::new(Win::new(Box::new(Consecutive))))),
-        Box::new(Shuffler::new(Box::new(Nearby), thread_rng())),
+        Box::new(Shuffler::new(Box::new(Nearby::new(2)), thread_rng())),
     );
     loop {
         let mut buffer = String::new();
