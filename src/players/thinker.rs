@@ -11,11 +11,15 @@ fn terminal(_: &mut Game) -> bool {
     false
 }
 
-pub struct Thinker(Box<dyn Heuristic>, Box<dyn Looker>);
+pub struct Thinker(Box<dyn Heuristic>, Box<dyn Looker>, u8);
 
 impl Thinker {
     pub fn new(heuristic: Box<dyn Heuristic>, looker: Box<dyn Looker>) -> Self {
-        Self(heuristic, looker)
+        Self(heuristic, looker, 2)
+    }
+
+    pub fn with_depth(heuristic: Box<dyn Heuristic>, looker: Box<dyn Looker>, depth: u8) -> Self {
+        Self(heuristic, looker, depth)
     }
 
     pub fn pvs(
@@ -75,11 +79,12 @@ impl Player for Thinker {
         let (pv, _) = self.pvs(
             game,
             game.moves.len(),
-            2,
+            self.2,
             i64::MIN,
             i64::MAX,
             game.side_to_play == Side::X,
         );
+        println!("info pv {:?}", pv);
         match pv.first() {
             Some(position) => Ok(position.clone()),
             None => bail!("No moves found!"),
