@@ -7,7 +7,7 @@ pub enum Side {
 }
 
 impl Side {
-    pub fn other(self) -> Self {
+    pub fn other(&self) -> Self {
         match &self {
             Side::X => Side::O,
             Side::O => Side::X,

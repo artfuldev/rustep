@@ -14,7 +14,7 @@ impl Termination {
             Some(position) => {
                 let win_length = game.win_length;
                 let winning_lines = wins(position, game.size, win_length);
-                let played = game.side_to_play.clone().other();
+                let played = game.side_to_play.other();
                 for line in winning_lines {
                     let mut count = 0;
                     for pos in &line {

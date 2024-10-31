@@ -99,7 +99,7 @@ impl Game {
         }
         let side = self.side_to_play.clone();
         let cell = Cell::Played(side.clone());
-        let other = side.clone().other();
+        let other = side.other();
         let zobrist = zobrist(self.size);
         let Position(x, y) = position.clone();
         self.cells[x as usize][y as usize] = cell.clone();
@@ -116,7 +116,7 @@ impl Game {
             None => {}
             Some(position) => {
                 let side = self.side_to_play.clone();
-                let other = side.clone().other();
+                let other = side.other();
                 let cell = Cell::Played(other.clone());
                 let zobrist = zobrist(self.size);
                 let Position(x, y) = position.clone();
