@@ -1,5 +1,6 @@
 mod antis;
 pub mod cached;
+pub mod chance;
 mod columns;
 pub mod consecutive;
 pub mod cumulative;
@@ -15,6 +16,7 @@ pub mod win;
 pub mod wins;
 
 pub use cached::*;
+pub use chance::*;
 pub use consecutive::*;
 pub use cumulative::*;
 pub use heuristic::*;
