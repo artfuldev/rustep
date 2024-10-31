@@ -9,7 +9,11 @@ pub struct Zobrist(FxHashMap<(Position, Cell), u64>, FxHashMap<Side, u64>);
 
 impl Zobrist {
     pub fn mov(&self, key: &(Position, Cell)) -> u64 {
-        self.0[&key]
+        if key.1 == Cell::Playable {
+            0
+        } else {
+            self.0[&key]
+        }
     }
 
     pub fn side(&self, side: &Side) -> u64 {
@@ -56,9 +60,9 @@ pub fn zobrist(size: u8) -> Zobrist {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
     use std::time::{Duration, Instant};
-
-    use super::zobrist;
 
     #[test]
     #[ignore]
@@ -66,5 +70,11 @@ mod tests {
         let start = Instant::now();
         let _ = zobrist(15);
         assert!(start.elapsed() < Duration::from_micros(1500));
+    }
+
+    #[test]
+    fn test_zobrist_for_size_15_returns_0_for_playable_cell() {
+        let z = zobrist(15);
+        assert_eq!(z.mov(&(Position(14, 5), Cell::Playable)), 0);
     }
 }
