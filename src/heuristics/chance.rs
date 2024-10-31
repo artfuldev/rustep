@@ -78,11 +78,11 @@ impl Heuristic for Chance {
         let imminent = game.win_length - 1u8;
         if game.side_to_play == Side::X && (*x_win_lengths.get(&imminent).expect("warmed up") > 0u8)
         {
-            return i64::MAX - (game.moves.len() as i64) - 2;
+            return i64::MAX - (game.moves.len() as i64) - 1;
         }
         if game.side_to_play == Side::O && (*o_win_lengths.get(&imminent).expect("warmed up") > 0u8)
         {
-            return i64::MIN + (game.moves.len() as i64) + 2;
+            return i64::MIN + (game.moves.len() as i64) + 1;
         }
         let mut score = 0;
         for i in imminent..0 {
