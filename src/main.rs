@@ -12,7 +12,7 @@ use std::{
 
 use crate::core::{zobrist, Command};
 use hashers::Transposer;
-use heuristics::{Cached, Chance, Win};
+use heuristics::{Assurer, Cached, Chance, Win};
 use lookers::{Nearby, Shuffler};
 use players::{Player, Thinker};
 use rand::thread_rng;
@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let author = env!("CARGO_PKG_AUTHORS");
     let mut player = Thinker::new(
         Box::new(Cached::new(
-            Box::new(Win::new(Box::new(Chance))),
+            Box::new(Win::new(Box::new(Assurer::new(Box::new(Chance))))),
             Box::new(Transposer),
         )),
         Box::new(Shuffler::new(Box::new(Nearby::new(2)), thread_rng())),
