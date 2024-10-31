@@ -35,7 +35,7 @@ pub struct Transposer;
 impl Transposer {
     pub fn transpose(&self, game: &Game, zobrist: &Zobrist) -> Vec<u64> {
         let mut seen: IntSet<u64> = IntSet::default();
-        let mut transpositions = vec![];
+        let mut transpositions = vec![game.hash];
         let rotated_90 = transpose_once(game, zobrist, |_, j, _| j, |i, _, n| n - 1 - i);
         if seen.insert(rotated_90) {
             transpositions.push(rotated_90);
