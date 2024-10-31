@@ -29,7 +29,7 @@ fn winnable(line: &Line, game: &Game) -> Option<(Side, u8)> {
         match game.get(position) {
             None => {
                 return None;
-            },
+            }
             Some(Cell::Played(played)) => {
                 if None == side {
                     side = Some(played.clone());
@@ -38,7 +38,7 @@ fn winnable(line: &Line, game: &Game) -> Option<(Side, u8)> {
                     return None;
                 }
                 count += 1;
-            },
+            }
             _ => {}
         }
     }
@@ -62,12 +62,16 @@ impl Heuristic for Chance {
             match winnable(&line, game) {
                 Some((side, count)) => match side {
                     Side::X => {
-                        if count == game.win_length { return i64::MAX - (game.moves.len() as i64); }
+                        if count == game.win_length {
+                            return i64::MAX - (game.moves.len() as i64);
+                        }
                         x_win_lengths
                             .insert(count, x_win_lengths.get(&count).expect("warmed up") + 1u8);
                     }
                     Side::O => {
-                        if count == game.win_length { return i64::MIN + (game.moves.len() as i64); }
+                        if count == game.win_length {
+                            return i64::MIN + (game.moves.len() as i64);
+                        }
                         o_win_lengths
                             .insert(count, o_win_lengths.get(&count).expect("warmed up") + 1u8);
                     }

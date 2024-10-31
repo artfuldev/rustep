@@ -105,13 +105,14 @@ mod tests {
 
     #[test]
     fn test_thinker_returns_move() -> Result<()> {
-        let (_, mut game) =
-            Game::parse("15_/14_o/15_/_o13_/15_/3_o3_x7_/15_/5_x_x7_/7_x7_/7_x7_/15_/8_x6_/15_/o6_2o6_/15_ x")?;
+        let (_, mut game) = Game::parse(
+            "15_/14_o/15_/_o13_/15_/3_o3_x7_/15_/5_x_x7_/7_x7_/7_x7_/15_/8_x6_/15_/o6_2o6_/15_ x",
+        )?;
         game.set_win_length(5);
         let mut thinker = Thinker::with_depth(
             Box::new(Win::new(Box::new(Chance))),
             Box::new(Nearby::new(2)),
-            1
+            1,
         );
         let position = thinker.best(&mut game, None)?;
         assert_eq!(position, Position(6, 7));
