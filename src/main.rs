@@ -10,7 +10,7 @@ use std::{
 };
 
 use crate::core::Command;
-use heuristics::{Cached, Consecutive, Win};
+use heuristics::{Cached, Chance, Win};
 use lookers::{Nearby, Shuffler};
 use players::{Player, Thinker};
 use rand::thread_rng;
@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let version = env!("CARGO_PKG_VERSION");
     let author = env!("CARGO_PKG_AUTHORS");
     let mut player = Thinker::new(
-        Box::new(Cached::new(Box::new(Win::new(Box::new(Consecutive))))),
+        Box::new(Cached::new(Box::new(Win::new(Box::new(Chance))))),
         Box::new(Shuffler::new(Box::new(Nearby::new(2)), thread_rng())),
     );
     loop {
