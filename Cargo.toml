@@ -1,6 +1,6 @@
 [package]
 name = "rustep"
-version = "0.9.0"
+version = "0.9.1"
 authors = ["artfuldev<hello@artful.dev>"]
 edition = "2021"
 
