@@ -42,9 +42,6 @@ impl Thinker {
             for position in self.1.moves(&game) {
                 game.play(&position);
                 let (mut pv, score) = self.pvs(game, visited + 1, depth - 1, alpha, beta, false);
-                if score > 0 {
-                    println!("{}: {}", position, score);
-                }
                 game.undo();
                 if score > value {
                     pv.insert(0, position.clone());
@@ -63,9 +60,6 @@ impl Thinker {
         for position in self.1.moves(&game) {
             game.play(&position);
             let (mut pv, score) = self.pvs(game, visited + 1, depth - 1, alpha, beta, true);
-            if score > 0 {
-                println!("{}: {}", position, score);
-            }
             game.undo();
             if score < value {
                 pv.insert(0, position.clone());
